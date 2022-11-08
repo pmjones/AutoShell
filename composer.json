@@ -1,0 +1,27 @@
+{
+    "name": "pmjones/auto-shell",
+    "description": "Automatically parses command-line strings to command classes.",
+    "autoload": {
+        "psr-4": {
+            "AutoShell\\": "./src"
+        }
+    },
+    "require": {
+        "psr/container": "^2.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AutoShell\\": "./tests"
+        }
+    },
+    "require-dev": {
+        "pds/skeleton": "^1.0",
+        "phpunit/phpunit": "^9.0",
+        "phpstan/phpstan": "^1.0"
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit",
+        "stan": "./vendor/bin/phpstan analyze --memory-limit=1G -c phpstan.neon src",
+        "testan": "composer test && composer stan"
+    }
+}
