@@ -87,7 +87,6 @@ class Shell
         $class = null;
         $options = null;
         $arguments = [];
-        $error = null;
         $exception = null;
 
         try {
@@ -97,7 +96,6 @@ class Shell
             $rm = $this->reflector->getMethod($rc, $this->config->method);
             $arguments = $this->getArguments($rm, $argv);
         } catch (Throwable $e) {
-            $error = get_class($e);
             $exception = $e;
         }
 
@@ -106,8 +104,7 @@ class Shell
             method: $this->config->method,
             options: $options,
             arguments: $arguments,
-            error: $error,
-            exception: $exception,
+            error: $exception,
         );
     }
 

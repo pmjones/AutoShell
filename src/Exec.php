@@ -15,8 +15,7 @@ class Exec
         public readonly ?string $method = null,
         public readonly ?Options $options = new Options(),
         public readonly array $arguments = [],
-        public readonly ?string $error = null,
-        public readonly ?Throwable $exception = null,
+        public readonly ?Throwable $error = null,
     ) {
     }
 }

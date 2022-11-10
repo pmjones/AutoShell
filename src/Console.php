@@ -62,7 +62,7 @@ class Console
         $exec = ($this->shell)($argv);
 
         // errors?
-        if ($exec->error === null) {
+        if (!$exec->error) {
             $command = $this->newCommand((string) $exec->class);
             $method = $exec->method;
             $options = $exec->options;
@@ -70,8 +70,8 @@ class Console
             return $command->$method($options, ...$arguments);
         }
 
-        fwrite($this->stderr, $exec->exception->getMessage() . PHP_EOL);
-        $code = (int) $exec->exception->getCode();
+        fwrite($this->stderr, $exec->error->getMessage() . PHP_EOL);
+        $code = (int) $exec->error->getCode();
 
         if (! $code) {
             $code = 1;

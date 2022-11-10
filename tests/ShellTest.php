@@ -21,7 +21,6 @@ class ShellTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(Options::CLASS, $exec->options);
         $this->assertSame([1, 'a', 'b', 'c'], $exec->arguments);
         $this->assertNull($exec->error);
-        $this->assertNull($exec->exception);
     }
 
     public function testMissingArgument()
@@ -30,8 +29,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
         $exec = ($this->shell)($argv);
         $this->assertSame(Fake\Command\FooBar\Baz::CLASS, $exec->class);
         $this->assertSame('__invoke', $exec->method);
-        $this->assertSame(Exception\ArgumentRequired::CLASS, $exec->error);
-        $this->assertInstanceof(Exception\ArgumentRequired::CLASS, $exec->exception);
+        $this->assertInstanceof(Exception\ArgumentRequired::CLASS, $exec->error);
     }
 
     public function testClassNotFound()
@@ -40,8 +38,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
         $exec = ($this->shell)($argv);
         $this->assertNull($exec->class);
         $this->assertSame('__invoke', $exec->method);
-        $this->assertSame(Exception\ClassNotFound::CLASS, $exec->error);
-        $this->assertInstanceof(Exception\ClassNotFound::CLASS, $exec->exception);
+        $this->assertInstanceof(Exception\ClassNotFound::CLASS, $exec->error);
     }
 
     public function testHelp()
