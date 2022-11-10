@@ -7,7 +7,7 @@
         }
     },
     "require": {
-        "psr/container": "^2.0"
+        "php": "^8.0"
     },
     "autoload-dev": {
         "psr-4": {
@@ -20,8 +20,8 @@
         "phpstan/phpstan": "^1.0"
     },
     "scripts": {
-        "test": "./vendor/bin/phpunit",
-        "stan": "./vendor/bin/phpstan analyze --memory-limit=1G -c phpstan.neon src",
-        "testan": "composer test && composer stan"
+        "unit": "./vendor/bin/phpunit",
+        "lint": "./vendor/bin/phpstan analyze --memory-limit=1G -c phpstan.neon src",
+        "test": "composer lint && composer unit"
     }
 }
