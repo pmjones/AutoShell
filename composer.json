@@ -7,7 +7,7 @@
         }
     },
     "require": {
-        "psr/container": "^2.0"
+        "php": "^8.0"
     },
     "autoload-dev": {
         "psr-4": {
