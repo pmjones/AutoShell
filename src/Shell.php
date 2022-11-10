@@ -131,7 +131,7 @@ class Shell
         $class .= $this->config->suffix;
 
         if (! class_exists($class)) {
-            throw new Exception\ClassNotFound($commandName, $class);
+            throw Exception\ClassNotFound::new($commandName, $class);
         }
 
         return $class;

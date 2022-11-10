@@ -7,13 +7,13 @@ use AutoShell\Exception;
 
 class ClassNotFound extends Exception
 {
-    public function __construct(
+    public static function new(
         string $commandName,
         string $class
-    ) {
+    ): self {
         $message = "The command '{$commandName}' maps to the class "
             . "'{$class}', which does not exist.";
 
-        return parent::__construct($message);
+        return new self($message);
     }
 }
