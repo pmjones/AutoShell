@@ -4,11 +4,8 @@ declare(strict_types=1);
 namespace AutoShell;
 
 use ArrayIterator;
-use Countable;
-use IteratorAggregate;
-use Traversable;
 
-class OptionCollection implements Countable, IteratorAggregate
+class OptionCollection extends ArrayIterator
 {
     /**
      * @var Option[]
@@ -20,30 +17,19 @@ class OptionCollection implements Countable, IteratorAggregate
      */
     public function __construct(protected array $attributes = [])
     {
+        $names = [];
         foreach ($this->attributes as $option) {
             foreach ($option->names as $name) {
-                $this->names[$name] = $option;
+                $names[$name] = $option;
             }
         }
-    }
-
-    /**
-     * @return ArrayIterator<int, Option>
-     */
-    public function getIterator() : Traversable
-    {
-        return new ArrayIterator($this->attributes);
-    }
-
-    public function count() : int
-    {
-        return count($this->attributes);
+        parent::__construct($names);
     }
 
     public function has(string $name) : bool
     {
         $name = ltrim($name, '-');
-        return isset($this->names[$name]);
+        return $this->offsetExists($name);
     }
 
     public function get(string $name) : Option
@@ -51,7 +37,7 @@ class OptionCollection implements Countable, IteratorAggregate
         $name = ltrim($name, '-');
 
         if ($this->has($name)) {
-            return $this->names[$name];
+            return $this->offsetGet($name);
         }
 
         $name = strlen($name) === 1 ? "-{$name}" : "--{$name}";
