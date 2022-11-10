@@ -49,7 +49,7 @@ class Format
         ];
 
         foreach ($markup as $find => $replace) {
-            $str = preg_replace($find, $replace, $str);
+            $str = preg_replace($find, $replace, $str) ?? '';
         }
 
         return strtr($str, ['\\' => '']) . static::RESET;
