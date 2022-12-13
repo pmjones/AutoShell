@@ -21,7 +21,7 @@
     },
     "scripts": {
         "test": "./vendor/bin/phpunit",
-        "stan": "./vendor/bin/phpstan analyze --memory-limit=1G -c phpstan.neon src",
-        "testan": "composer test && composer stan"
+        "cs-fix": "./vendor/bin/phpstan analyze --memory-limit=1G -c phpstan.neon src",
+        "check": "composer test && composer stan"
     }
 }
