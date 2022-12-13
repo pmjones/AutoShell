@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace AutoShell;
 
+use Throwable;
+
 class Console
 {
     /**
@@ -72,8 +74,10 @@ class Console
             return $command->$method($options, ...$arguments);
         }
 
-        fwrite($this->stderr, $exec->exception->getMessage() . PHP_EOL);
-        $code = (int) $exec->exception->getCode();
+        /** @var Throwable $exception */
+        $exception = $exec->exception;
+        fwrite($this->stderr, $exception->getMessage() . PHP_EOL);
+        $code = (int) $exception->getCode();
 
         if (! $code) {
             $code = 1;

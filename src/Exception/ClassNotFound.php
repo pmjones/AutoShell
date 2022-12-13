@@ -14,6 +14,6 @@ class ClassNotFound extends Exception
         $message = "The command '{$commandName}' maps to the class "
             . "'{$class}', which does not exist.";
 
-        return parent::__construct($message);
+        parent::__construct($message);
     }
 }
