@@ -129,9 +129,8 @@ pass a `$factory` callable to the _Console_:
 
 $console = Console::new(
     namespace: 'Project\Sapi\Cli\Command',
-    directory: dirname(__DIR__) . '/src/Sapi/Cli/Command'
-    factory: function (string $class) use ($container) : object {
-        return $container->get($class);
+    directory: dirname(__DIR__) . '/src/Sapi/Cli/Command',
+    factory: fn (string $class) => return $container->get($class),
     }
 );
 
