@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 namespace AutoShell;
 
 class OptionsTest extends \PHPUnit\Framework\TestCase
