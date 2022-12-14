@@ -130,14 +130,37 @@ pass a `$factory` callable to the _Console_:
 $console = Console::new(
     namespace: 'Project\Sapi\Cli\Command',
     directory: dirname(__DIR__) . '/src/Sapi/Cli/Command',
-    factory: fn (string $class) => return $container->get($class),
-    }
+    factory: fn (string $class) => $container->get($class),
 );
-
 ```
 
 > N.b.: The _Console_ will not use the injected factory for HelpCommand classes;
-  it will create those itself.
+> it will create those itself.
+
+### STDOUT and STDERR
+
+By default, the _Console_ writes help output to `STDOUT`, and writes
+invocation-time error messages to `STDERR` (such as when it cannot parse
+command line input).
+
+To change where the _Console_ writes output, pass a callable for the `$stdout`
+and/or `$stderr` arguments:
+
+```php
+
+/** @var Psr\Container\ContainerInterface $container */
+$logger = $container->get(LoggerInterface::class);
+
+$console = Console::new(
+    namespace: 'Project\Sapi\Cli\Command',
+    directory: dirname(__DIR__) . '/src/Sapi/Cli/Command',
+    stdout: fn (string $output) => $logger->info($output),
+    stderr: fn (string $output) => $logger->error($output),
+);
+```
+
+> N.b.: These are used only by the _Console_ itself. Your command classes can
+> use any output mechanism you like.
 
 ## How It Works
 
