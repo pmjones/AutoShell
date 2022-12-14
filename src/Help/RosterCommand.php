@@ -20,7 +20,7 @@ class RosterCommand extends HelpCommand
             $output .= $this->format->bold($name) . PHP_EOL
                 . "    {$info}" . PHP_EOL . PHP_EOL;
         }
-        fwrite($this->stdout, $output);
+        ($this->stdout)($output);
         return 0;
     }
 }

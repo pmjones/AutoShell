@@ -9,8 +9,8 @@ class Console
 {
     /**
      * @param callable $factory
-     * @param resource $stdout
-     * @param resource $stderr
+     * @param callable $stdout
+     * @param callable $stderr
      */
     public static function new(
         string $namespace,
@@ -18,8 +18,8 @@ class Console
         string $method = '__invoke',
         string $suffix = '',
         mixed $factory = null,
-        mixed $stdout = STDOUT,
-        mixed $stderr = STDERR,
+        mixed $stdout = null,
+        mixed $stderr = null,
     ) : Console
     {
         $shell = Shell::new(
@@ -29,28 +29,24 @@ class Console
             suffix: $suffix,
         );
 
-        $factory ??= function (string $class) : object {
-            return new $class();
-        };
-
         return new Console(
             $shell,
-            $factory,
-            $stdout,
-            $stderr
+            $factory ??= fn (string $class) => new $class(),
+            $stdout ??= fn (string $output) => fwrite(STDOUT, $output),
+            $stderr ??= fn (string $output) => fwrite(STDERR, $output),
         );
     }
 
     /**
      * @param callable $factory
-     * @param resource $stdout
-     * @param resource $stderr
+     * @param callable $stdout
+     * @param callable $stderr
      */
     public function __construct(
         protected Shell $shell,
         protected mixed $factory,
-        protected mixed $stdout = STDOUT,
-        protected mixed $stderr = STDERR,
+        protected mixed $stdout,
+        protected mixed $stderr,
     ) {
     }
 
@@ -76,7 +72,7 @@ class Console
 
         /** @var Throwable $exception */
         $exception = $exec->exception;
-        fwrite($this->stderr, $exception->getMessage() . PHP_EOL);
+        ($this->stderr)($exception->getMessage() . PHP_EOL);
         $code = (int) $exception->getCode();
 
         if (! $code) {
@@ -91,6 +87,7 @@ class Console
         if (is_subclass_of($class, Help\HelpCommand::class)) {
             return new $class(
                 config: $this->shell->config,
+                format: new Format(),
                 stdout: $this->stdout
             );
         }

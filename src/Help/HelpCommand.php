@@ -9,12 +9,12 @@ use AutoShell\Format;
 abstract class HelpCommand
 {
     /**
-     * @param resource $stdout
+     * @param callable $stdout
      */
     public function __construct(
         protected Config $config,
-        protected Format $format = new Format(),
-        protected mixed $stdout = STDOUT
+        protected Format $format,
+        protected mixed $stdout,
     ) {
     }
 }

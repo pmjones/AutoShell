@@ -20,7 +20,7 @@ class ManualCommand extends HelpCommand
     {
         $manual = new Manual();
         $output = $manual($commandName, $class, $method);
-        fwrite($this->stdout, $output);
+        ($this->stdout)($output);
         return 0;
     }
 }
