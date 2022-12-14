@@ -13,15 +13,15 @@ class ManualTest extends \PHPUnit\Framework\TestCase
 
     public function testBasic()
     {
-        $actual = trim($this->format->strip(
+        $actual = $this->format->strip(
             ($this->manual)(
                 'foo-bar:dib',
                 Fake\Command\FooBar\Dib::CLASS,
                 '__invoke'
             )
-        ));
+        );
 
-        $expect = trim(<<<TEXT
+        $expect = <<<TEXT
 NAME
     foo-bar:dib -- Dibs an i, with optional alpha, bravo, and charlie behaviors.
 
@@ -58,42 +58,45 @@ EXAMPLES
 
     Please use your imagination.
 
-TEXT);
+
+TEXT;
         $this->assertSame($expect, $actual);
     }
 
     public function testNoOptionsNoArguments()
     {
-        $actual = trim($this->format->strip(
+        $actual = $this->format->strip(
             ($this->manual)(
                 'foo-bar:qux',
                 Fake\Command\FooBar\Qux::CLASS,
                 '__invoke'
             )
-        ));
+        );
 
-        $expect = trim(<<<TEXT
+        $expect = <<<TEXT
 NAME
     foo-bar:qux -- Command for qux operations.
 
 SYNOPSIS
     foo-bar:qux
-TEXT);
+
+
+TEXT;
 
         $this->assertSame($expect, $actual);
     }
 
     public function testVariadicArguments()
     {
-        $actual = trim($this->format->strip(
+        $actual = $this->format->strip(
             ($this->manual)(
                 'foo-bar:baz',
                 Fake\Command\FooBar\Baz::CLASS,
                 '__invoke'
             )
-        ));
+        );
 
-        $expect = trim(<<<TEXT
+        $expect = <<<TEXT
 NAME
     foo-bar:baz
 
@@ -111,7 +114,9 @@ OPTIONS
     -z
     --zim
         No help available.
-TEXT);
+
+
+TEXT;
 
         $this->assertSame($expect, $actual);
     }
