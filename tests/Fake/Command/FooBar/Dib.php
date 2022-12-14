@@ -16,7 +16,7 @@ use AutoShell\Options;
         There are quite a few nuances.
 
     *EXAMPLES*
-        Here are some examples of how use the command.
+        Here are some examples of how to use the command.
 
         Please use your imagination.
 
