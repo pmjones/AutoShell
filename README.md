@@ -1,19 +1,19 @@
 # AutoShell
 
-AutoShell automatically maps command names to PHP Command classes in a specified
+AutoShell automatically maps command names to PHP command classes in a specified
 namespace, reflecting on a specified main method within that class to determine
-the argument and option values. Those parameters may be typical scalar values
-(int, float, string, bool), or arrays,
+the argument and option values. The method parameters may be scalar values
+(int, float, string, bool) or arrays.
 
 Install AutoShell using Composer:
 
 ```
-composer require pmjones/auto-shell ^2.0
+composer require pmjones/auto-shell ^1.0
 ```
 
 AutoShell is low-maintenance. Merely adding a class to your source code, in the
 recognized namespace and with the recognized main method name, automatically
-makes it available as a Command.
+makes it available as a command.
 
 Think of AutoShell as the "router" for your command classes:
 
@@ -25,23 +25,26 @@ Think of AutoShell as the "router" for your command classes:
 -  Here, you would have a Console class pass `$_SERVER['argv']` to a Shell, and
    get back an Exec DTO describing which Command class to invoke (with the
    options and arguments thereto). The Console would then invoke the Command
-   with those options and argumetns.
+   with those options and arguments.
 
 That is:
 
     Front Controller    => Console
     Router              => Shell
+    Route               => Exec
     Controller/Action   => Command
 
 ## Getting Started
 
-### Basic Console
+### Console Script
 
 After installing AutoShell, set up a _Console_ with the namespace for your
 command classes and the corresponding directory.
 
 ```php
 use AutoShell\Console;
+
+require dirname(__DIR__) . '/vendor/autoload.php';
 
 $console = Console::new(
     namespace: 'Project\Sapi\Cli\Command',
@@ -53,7 +56,8 @@ exit($code);
 ```
 
 If you are following the [pds/skeleton](https://github.com/php-pds/skeleton)
-project directory structure, you can save this file as `bin/console.php`.
+project directory structure, you can save this console script in the `bin/`
+directory as `console.php` (or any other name you choose).
 
 ### Command Class
 
@@ -67,7 +71,7 @@ use AutoShell\Option;
 use AutoShell\Options;
 
 #[Help('A hello-world example command.')]
-#[Option('-u,--upper', help: "Output in upper case.")]
+#[Option('-u,--upper', help: 'Output in upper case.')]
 class Hello
 {
     public function __invoke(Options $options, string $name) : int
@@ -87,12 +91,19 @@ class Hello
 When writing your own commands, note that the first parameter **must** be
 _Options_, even if you do not define an _Option_ attributes on the command.
 
+Note also that the command should return an `int` exit code.
+
+Finally, try not to perform any business logic within the command itself. The
+command is part of the presentation layer, not the application, infrastructure,
+or domain layers. Hand off any real work to a class in one of those other
+layers.
+
 ### Run The Command
 
 You can now run the `Hello` command at the command line, like so:
 
 ```sh
-php ./bin/run.php hello --upper world
+php bin/console.php hello --upper world
 ```
 
 The output will be:
@@ -103,24 +114,24 @@ Hello, WORLD.
 
 ### Get Help
 
-You can see the list of available commands by invoking the console script without
-any arguments, or with the single argument `help`:
+You can see the roster of available commands by invoking the console script
+without any arguments, or with the single argument `help`:
 
 ```sh
-./biin/console.php
-./biin/console.php help
+php bin/console.php
+php bin/console.php help
 ```
 
 You can see the manual page for a command by invoking the console script with
 a command name:
 
 ```sh
-./bin/console.php help hello
+php bin/console.php help hello
 ```
 
 ### Adding A Command Factory
 
-By default, the provided _Console_ will just create command classes using `new`.
+By default, the _Console_ will just create command classes using `new`.
 To inject a command factory of your own, perhaps one based on psr/container,
 pass a `$factory` callable to the _Console_:
 
@@ -155,7 +166,7 @@ $console = Console::new(
     namespace: 'Project\Sapi\Cli\Command',
     directory: dirname(__DIR__) . '/src/Sapi/Cli/Command',
     stdout: fn (string $output) => $logger->info($output),
-    stderr: fn (string $output) => $logger->error($output),
+    stderr: fn (string $output) => $logger->critical($output),
 );
 ```
 
