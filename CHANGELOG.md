@@ -1,3 +1,5 @@
 # Change Log
 
-No releases yet.
+## 0.1.0-alpha
+
+Alpha release for early adopters.
