@@ -1,2 +1,5 @@
 [commands]
 phpunit = composer check
+
+[files]
+changes = CHANGELOG.md
