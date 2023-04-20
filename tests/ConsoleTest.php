@@ -20,6 +20,7 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
             directory: __DIR__ . '/Fake/Command',
             stdout: fn (string $output) => $this->stdout .= $output,
             stderr: fn (string $output) => $this->stderr .= $output,
+            header: "AutoShell fake test command." . PHP_EOL . PHP_EOL,
         );
 
         $this->format = new Format();
@@ -52,6 +53,8 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
         $exit = ($this->console)(['run.php', 'help']);
         $this->assertSame(0, $exit);
         $expect = <<<TEXT
+AutoShell fake test command.
+
 foo-bar:baz
     No help available.
 
@@ -72,6 +75,8 @@ TEXT;
         $exit = ($this->console)(['run.php', 'help', 'foo-bar:qux']);
         $this->assertSame(0, $exit);
         $expect = <<<TEXT
+AutoShell fake test command.
+
 NAME
     foo-bar:qux -- Command for qux operations.
 

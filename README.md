@@ -300,3 +300,15 @@ class BarCommand
     }
 }
 ```
+
+Finally, you can add a header to every manual page and roster by specifying
+the `$header` parameter when instantiating the _Console_. The `$header` may
+be any `string` or `Stringable`. For example:
+
+```php
+$console = Console::new(
+    namespace: 'Project\Sapi\Cli\Command',
+    directory: dirname(__DIR__) . '/src/Sapi/Cli/Command',
+    header: "My project command console." . PHP_EOL . PHP_EOL;
+);
+```

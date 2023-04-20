@@ -6,6 +6,7 @@ namespace AutoShell;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
+use Stringable;
 use Throwable;
 
 class Shell
@@ -15,6 +16,7 @@ class Shell
         string $directory,
         string $method = '__invoke',
         string $suffix = '',
+        string|Stringable $header = '',
     ) : Shell
     {
         $filter = new Filter();
@@ -26,6 +28,7 @@ class Shell
                 directory: $directory,
                 method: $method,
                 suffix: $suffix,
+                header: $header,
             ),
             $getopt,
             $filter,

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace AutoShell;
 
+use Stringable;
 use Throwable;
 
 class Console
@@ -20,6 +21,7 @@ class Console
         mixed $factory = null,
         mixed $stdout = null,
         mixed $stderr = null,
+        string|Stringable $header = '',
     ) : Console
     {
         $shell = Shell::new(
@@ -27,6 +29,7 @@ class Console
             directory: $directory,
             method: $method,
             suffix: $suffix,
+            header: $header,
         );
 
         return new Console(

@@ -13,6 +13,7 @@ class RosterCommand extends HelpCommand
         $output = '';
         $roster = new Roster($this->config);
         $commands = $roster();
+
         foreach ($commands as $name => $info) {
             if (trim($info) === '') {
                 $info = "No help available.";
@@ -20,6 +21,13 @@ class RosterCommand extends HelpCommand
             $output .= $this->format->bold($name) . PHP_EOL
                 . "    {$info}" . PHP_EOL . PHP_EOL;
         }
+
+        $header = (string) $this->config->header;
+
+        if ($header !== '') {
+            ($this->stdout)($header);
+        }
+
         ($this->stdout)($output);
         return 0;
     }
