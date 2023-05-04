@@ -100,7 +100,7 @@ layers.
 
 ### Run The Command
 
-You can now run the `Hello` command at the command line, like so:
+You can now run the _Hello_ command at the command line, like so:
 
 ```sh
 php bin/console.php hello --upper world
@@ -145,8 +145,8 @@ $console = Console::new(
 );
 ```
 
-> N.b.: The _Console_ will not use the injected factory for HelpCommand classes;
-> it will create those itself.
+The _Console_ will not use the injected factory for HelpCommand classes; it
+will create those itself.
 
 ### STDOUT and STDERR
 
@@ -170,8 +170,10 @@ $console = Console::new(
 );
 ```
 
-> N.b.: These are used only by the _Console_ itself. Your command classes can
-> use any output mechanism you like.
+Please note that these callables are used **only by the _Console_ itself.**
+
+Your command classes can use any output mechanism you like; they are
+completely under your own control.
 
 ## How It Works
 
@@ -208,20 +210,38 @@ provided implementation for an example of how to write your own.
 
 ## Working with Options
 
-You can define a long and short options for your command by adding an _Option_
-attribute to the command class.
+You can define long and short options for your command by adding an _Option_
+attribute to the command class. The first parameter, a comma-separated list
+of short and long names for the option, is the only one required:
 
 ```php
-#[Option(
-    'f,foo', // comma-separated list of short and long names for this option
-    argument: Option::VALUE_REJECTED, // or VALUE_REQUIRED or VALUE_OPTIONAL
-    multiple: false, // true if the option may be specified multiple times
-    type: 'string', // the value type for the option value: int, bool, etc.
-    default: 'default_value', // the default value for the option
-    help: 'Text for help.', // a help line for the command manual page for this option
-    argname: 'foo-value', // a name for the argument help text
-)]
+#[Option('f,foo')]
 ```
+
+There are several optional named parameters:
+
+- `argument`: (string) Must be one of `Option::VALUE_REJECTED`,
+  `VALUE_REQUIRED`, or `VALUE_OPTIONAL`. Default is `VALUE_REJECTED`.
+
+    - If `VALUE_REJECTED`, no value is allowed for the option.
+    - If `VALUE_REQUIRED`, a value *must* be specified.
+    - If `VALUE_OPTIONAL`, a value may be specified; if the option is
+      specified without a value, it will use the default value (see below).
+
+- `multiple`: (bool) `true` if the option may be specified multiple times.
+  Default is `false`.
+
+- `type`: (string) Cast the option value to this type (`'string'`, `'int'`,
+  `'float'`, `'bool'`, etc.). Default is `null`, meaning the argument will
+  not be cast to anything.
+
+- `default`: (mixed) The value for the option when none is specified. Default
+  is `true`.
+
+- `help`: (string) A short line of help text about this option for the manual
+  page.
+
+- `argname`: (string) A short name for the argument in the help text.
 
 Inside your command, you can address the _Option_ via the _Options_ parameter
 as an object property or an array key:
@@ -234,10 +254,10 @@ class FooCommand
     {
         if (isset($options['f'])) {
             // -f and --foo are the same value
-            assert($options['f'] === $options['foo']);
+            assert($options['f'] === $options->foo);
 
             // display the value
-            echo $options['f'];
+            echo $options->f;
         }
 
         return 0;

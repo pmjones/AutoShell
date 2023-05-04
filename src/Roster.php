@@ -12,7 +12,8 @@ class Roster
 {
     public function __construct(
         protected Config $config,
-        protected Reflector $reflector = new Reflector()
+        protected Reflector $reflector = new Reflector(),
+        protected Format $format = new Format(),
     ) {
     }
 
@@ -38,7 +39,7 @@ class Roster
             $helpLine = '';
 
             if ($help !== null) {
-                $helpLine = $help->line;
+                $helpLine = $this->format->markup($help->line);
             }
 
             $roster[$commandName] = $helpLine;

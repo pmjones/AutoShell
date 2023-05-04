@@ -73,7 +73,7 @@ class Manual
     protected function name(ReflectionClass $rc) : ?string
     {
         $help = $this->reflector->getHelpAttribute($rc);
-        return ($help === null) ? null : $help->line;
+        return ($help === null) ? null : $this->format->markup($help->line);
     }
 
     protected function body(ReflectionClass $rc) : ?string
