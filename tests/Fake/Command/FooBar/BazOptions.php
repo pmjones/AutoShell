@@ -11,5 +11,5 @@ class BazOptions extends Options
     #[Option(
         'z,zim',
     )]
-    public readonly ?bool $zim;
+    public ?bool $zim;
 }

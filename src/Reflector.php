@@ -58,10 +58,7 @@ class Reflector
      */
     public function getOptionAttributes(ReflectionMethod $rm) : array
     {
-        // look at method params
-        // first one that is_a(Options::class),
-        // reflect on *that* class, and collect
-        // attributes off of its properties.
+        /** @var class-string */
         $optionsClass = $this->getOptionsClass($rm);
 
         if (! $optionsClass) {

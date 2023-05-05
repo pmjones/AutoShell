@@ -2,4 +2,5 @@ parameters:
     level: max
     paths:
         - src
+        - tests
     checkGenericClassInNonGenericObjectType: false

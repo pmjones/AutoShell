@@ -5,7 +5,7 @@ namespace AutoShell;
 
 class OptionTest extends \PHPUnit\Framework\TestCase
 {
-    public function testDefaultNotAllowed()
+    public function testDefaultNotAllowed() : void
     {
         $this->expectException(Exception\DefaultNotAllowed::class);
         new Option(

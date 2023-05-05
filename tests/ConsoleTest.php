@@ -32,7 +32,7 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
         $this->stderr = '';
     }
 
-    protected function assertStdout(string $expect)
+    protected function assertStdout(string $expect) : void
     {
         $this->assertSame(
             $expect,
@@ -40,7 +40,7 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    protected function assertStderr(string $expect)
+    protected function assertStderr(string $expect) : void
     {
         $this->assertSame(
             $expect,
@@ -48,7 +48,7 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    public function testHelpRoster()
+    public function testHelpRoster() : void
     {
         $exit = ($this->console)(['run.php', 'help']);
         $this->assertSame(0, $exit);
@@ -70,7 +70,7 @@ TEXT;
         $this->assertStderr('');
     }
 
-    public function testHelpManual()
+    public function testHelpManual() : void
     {
         $exit = ($this->console)(['run.php', 'help', 'foo-bar:qux']);
         $this->assertSame(0, $exit);
@@ -89,7 +89,7 @@ TEXT;
         $this->assertStderr('');
     }
 
-    public function testSuccess()
+    public function testSuccess() : void
     {
         $exit = ($this->console)(['run.php', 'foo-bar:qux']);
         $this->assertSame(0, $exit);
@@ -97,7 +97,7 @@ TEXT;
         $this->assertStderr('');
     }
 
-    public function testFailure()
+    public function testFailure() : void
     {
         $exit = ($this->console)(['run.php', 'foo-bar:qux', '--no-such-option']);
         $this->assertSame(1, $exit);

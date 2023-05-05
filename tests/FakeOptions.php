@@ -5,7 +5,7 @@ namespace AutoShell;
 
 class FakeOptions extends Options
 {
-	public readonly ?string $foo;
+	public ?string $foo;
 
-	public readonly ?string $bar;
+	public ?string $bar;
 }

@@ -5,12 +5,18 @@ namespace AutoShell;
 
 class GetoptTest extends \PHPUnit\Framework\TestCase
 {
+    protected Getopt $getopt;
+
     protected function setUp() : void
     {
         $this->getopt = new Getopt(new Filter());
     }
 
-    protected function assertSameValues(array $expect, array $attributes)
+    /**
+     * @param mixed[] $expect
+     * @param array<string, Option> $attributes
+     */
+    protected function assertSameValues(array $expect, array $attributes) : void
     {
         $actual = [];
 
@@ -23,7 +29,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expect, $actual);
     }
 
-    public function testParse_noOptions()
+    public function testParse_noOptions() : void
     {
         $attributes = [];
         $input = ['abc', 'def'];
@@ -33,7 +39,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expect, $input);
     }
 
-    public function testParse_undefinedOption()
+    public function testParse_undefinedOption() : void
     {
         $attributes = [];
         $input = ['-z', 'def'];
@@ -42,7 +48,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->getopt->parse($attributes, $input);
     }
 
-    public function testParse_longRejected()
+    public function testParse_longRejected() : void
     {
         $attributes = [
             'foo_bar' => new Option('foo-bar'),
@@ -61,7 +67,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->getopt->parse($attributes, $input);
     }
 
-    public function testParse_longRequired()
+    public function testParse_longRequired() : void
     {
         // '=' as separator
         $attributes = [
@@ -90,7 +96,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->getopt->parse($attributes, $input);
     }
 
-    public function testParse_longOptional()
+    public function testParse_longOptional() : void
     {
         $attributes = [
             new Option('foo-bar', argument: Option::VALUE_OPTIONAL)
@@ -109,7 +115,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->assertSameValues($expect, $attributes);
     }
 
-    public function testParse_longMultiple()
+    public function testParse_longMultiple() : void
     {
         $attributes = [
             new Option('foo-bar', argument: Option::VALUE_OPTIONAL, multiple: true)
@@ -127,7 +133,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->assertSameValues($expect, $attributes);
     }
 
-    public function testParse_shortRejected()
+    public function testParse_shortRejected() : void
     {
         $attributes = [
             new Option('f')
@@ -147,7 +153,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(['baz'], $arguments);
     }
 
-    public function testParse_shortRequired()
+    public function testParse_shortRequired() : void
     {
         $attributes = [
             new Option('f', argument: Option::VALUE_REQUIRED)
@@ -166,7 +172,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->getopt->parse($attributes, $input);
     }
 
-    public function testParse_shortOptional()
+    public function testParse_shortOptional() : void
     {
         $attributes = [
             new Option('f', argument: Option::VALUE_OPTIONAL)
@@ -185,7 +191,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->assertSameValues($expect, $attributes);
     }
 
-    public function testParse_shortMultiple()
+    public function testParse_shortMultiple() : void
     {
         $attributes = [
             new Option('f', argument: Option::VALUE_OPTIONAL, multiple: true)
@@ -197,7 +203,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->assertSameValues($expect, $attributes);
     }
 
-    public function testParse_shortCluster()
+    public function testParse_shortCluster() : void
     {
         $attributes = [
             new Option('f'),
@@ -215,7 +221,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->assertSameValues($expect, $attributes);
     }
 
-    public function testParse_shortClusterRequired()
+    public function testParse_shortClusterRequired() : void
     {
         $attributes = [
             new Option('f'),
@@ -229,7 +235,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->getopt->parse($attributes, $input);
     }
 
-    public function testParseAndGet()
+    public function testParseAndGet() : void
     {
         $attributes = [
             new Option('foo-bar', argument: Option::VALUE_REQUIRED),
@@ -274,7 +280,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expectArgv, $arguments);
     }
 
-    public function testMultipleWithAlias()
+    public function testMultipleWithAlias() : void
     {
         $attributes = [
             new Option('-f,--foo', argument: Option::VALUE_OPTIONAL, multiple: true)

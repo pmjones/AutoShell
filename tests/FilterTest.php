@@ -5,12 +5,14 @@ namespace AutoShell;
 
 class FilterTest extends \PHPUnit\Framework\TestCase
 {
+    protected Filter $filter;
+
     protected function setUp() : void
     {
         $this->filter = new Filter();
     }
 
-    public function testToArray()
+    public function testToArray() : void
     {
         $expect = ['1', '2', '3'];
 
@@ -21,7 +23,7 @@ class FilterTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expect, $actual);
     }
 
-    public function testToBool_true()
+    public function testToBool_true() : void
     {
         $expect = true;
 
@@ -35,7 +37,7 @@ class FilterTest extends \PHPUnit\Framework\TestCase
         ($this->filter)('x', 'bool', 'Expected bool');
     }
 
-    public function testToBool_false()
+    public function testToBool_false() : void
     {
         $expect = false;
 
@@ -49,7 +51,7 @@ class FilterTest extends \PHPUnit\Framework\TestCase
         ($this->filter)('x', 'bool', 'Expected bool');
     }
 
-    public function testToInt()
+    public function testToInt() : void
     {
         $expect = 1;
 
@@ -63,7 +65,7 @@ class FilterTest extends \PHPUnit\Framework\TestCase
         ($this->filter)('x', 'int', 'Expected int');
     }
 
-    public function testToFloat()
+    public function testToFloat() : void
     {
         $expect = 1.23;
 
@@ -77,7 +79,7 @@ class FilterTest extends \PHPUnit\Framework\TestCase
         ($this->filter)('x', 'float', 'Expected float');
     }
 
-    public function testToMixed()
+    public function testToMixed() : void
     {
         $expect = 'abc';
         $actual = ($this->filter)($expect, 'mixed', 'Expected mixed');
@@ -92,7 +94,7 @@ class FilterTest extends \PHPUnit\Framework\TestCase
         $this->assertSame($expect, $actual);
     }
 
-    public function testToString()
+    public function testToString() : void
     {
         $expect = 'abc';
         $actual = ($this->filter)($expect, 'string', 'Expected string');

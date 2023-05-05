@@ -5,8 +5,14 @@ namespace AutoShell;
 
 class Getopt
 {
+    /**
+     * @var array<string, Option>
+     */
     protected array $names = [];
 
+    /**
+     * @var array<string, Option>
+     */
     protected array $options = [];
 
     public function __construct(protected Filter $filter = new Filter())
@@ -30,6 +36,7 @@ class Getopt
     }
 
     /**
+     * @param array<string, Option> &$options
      * @param array<int, string> $input
      * @return array<int, mixed>
      */

@@ -5,13 +5,17 @@ namespace AutoShell;
 
 class ManualTest extends \PHPUnit\Framework\TestCase
 {
+    protected Format $format;
+
+    protected Manual $manual;
+
     protected function setUp() : void
     {
         $this->format = new Format();
         $this->manual = new Manual();
     }
 
-    public function testBasic()
+    public function testBasic() : void
     {
         $actual = $this->format->strip(
             ($this->manual)(
@@ -63,7 +67,7 @@ TEXT;
         $this->assertSame($expect, $actual);
     }
 
-    public function testNoOptionsNoArguments()
+    public function testNoOptionsNoArguments() : void
     {
         $actual = $this->format->strip(
             ($this->manual)(
@@ -86,7 +90,7 @@ TEXT;
         $this->assertSame($expect, $actual);
     }
 
-    public function testVariadicArguments()
+    public function testVariadicArguments() : void
     {
         $actual = $this->format->strip(
             ($this->manual)(

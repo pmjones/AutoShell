@@ -8,7 +8,7 @@ class Baz
     public function __invoke(
         BazOptions $options,
         int $i,
-        ...$tail
+        string ...$tail
     ) : int
     {
         return 0;

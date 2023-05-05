@@ -7,6 +7,9 @@ use ReflectionClass;
 
 class Options
 {
+    /**
+     * @param array<string, Option> $attributes
+     */
     public function __construct(array $attributes = [])
     {
         $rc = new ReflectionClass($this);

@@ -7,15 +7,17 @@ use AutoShell\Fake\Command\FooBar\BazOptions;
 
 class ShellTest extends \PHPUnit\Framework\TestCase
 {
+    protected Shell $shell;
+
     protected function setUp() : void
     {
         $this->shell = Shell::new(
-            Fake\Command::class,
+            'AutoShell\\Fake\\Command',
             __DIR__ . '/Fake/Command'
         );
     }
 
-    public function testBasic()
+    public function testBasic() : void
     {
         $argv = ['foo-bar:baz', '1', 'a', 'b', 'c'];
         $exec = ($this->shell)($argv);
@@ -28,7 +30,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
         $this->assertNull($exec->exception);
     }
 
-    public function testMissingArgument()
+    public function testMissingArgument() : void
     {
         $argv = ['foo-bar:baz'];
         $exec = ($this->shell)($argv);
@@ -38,7 +40,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceof(Exception\ArgumentRequired::class, $exec->exception);
     }
 
-    public function testClassNotFound()
+    public function testClassNotFound() : void
     {
         $argv = ['nonesuch'];
         $exec = ($this->shell)($argv);
@@ -48,7 +50,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceof(Exception\ClassNotFound::class, $exec->exception);
     }
 
-    public function testHelp()
+    public function testHelp() : void
     {
         $argv = [];
         $exec = ($this->shell)($argv);

@@ -5,7 +5,7 @@ namespace AutoShell;
 
 class FormatTest extends \PHPUnit\Framework\TestCase
 {
-    public function testMarkup()
+    public function testMarkup() : void
     {
         $format = new Format();
 

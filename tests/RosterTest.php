@@ -14,7 +14,7 @@ class RosterTest extends \PHPUnit\Framework\TestCase
     protected function setUp() : void
     {
         $this->config = new Config(
-            namespace: Fake\Command::class,
+            namespace: 'AutoShell\\Fake\\Command',
             directory: __DIR__ . '/Fake/Command',
         );
 
@@ -23,7 +23,7 @@ class RosterTest extends \PHPUnit\Framework\TestCase
         $this->format = new Format();
     }
 
-    public function test()
+    public function test() : void
     {
         $actual = ($this->roster)();
 

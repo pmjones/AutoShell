@@ -12,17 +12,17 @@ class DibOptions extends Options
         'a,alpha',
         help: "The alpha option."
     )]
-    public readonly ?bool $alpha;
+    public ?bool $alpha;
 
     #[Option('b,bravo',
         argument: Option::VALUE_REQUIRED,
         argname: 'bval'
     )]
-    public readonly ?string $bravo;
+    public ?string $bravo;
 
     #[Option('c,charlie',
         argument: Option::VALUE_OPTIONAL,
         default: 'delta',
     )]
-    public readonly ?string $charlie;
+    public ?string $charlie;
 }
