@@ -5,8 +5,28 @@ namespace AutoShell;
 
 class Getopt
 {
+    protected array $names = [];
+
+    protected array $options = [];
+
     public function __construct(protected Filter $filter = new Filter())
     {
+    }
+
+    protected function getOptionByName(string $name) : Option
+    {
+        $name = ltrim($name, '-');
+
+        if (isset($this->names[$name])) {
+            return $this->names[$name];
+        }
+
+        $name = strlen($name) === 1 ? "-{$name}" : "--{$name}";
+
+        throw new Exception\OptionNotDefined(
+            "Option {$name} is not defined."
+        );
+
     }
 
     /**
@@ -14,10 +34,18 @@ class Getopt
      * @return array<int, mixed>
      */
     public function parse(
-        OptionCollection $optionCollection,
+        array &$options,
         array $input
     ) : array
     {
+        $this->options = $options;
+
+        foreach ($this->options as $option) {
+            foreach ($option->names as $name) {
+                $this->names[$name] = $option;
+            }
+        }
+
         // flag to say when we've reached the end of options
         $done = false;
 
@@ -43,13 +71,13 @@ class Getopt
 
             // long option?
             if (substr($curr, 0, 2) == '--') {
-                $this->longOption($input, $optionCollection, ltrim($curr, '-'));
+                $this->longOption($input, ltrim($curr, '-'));
                 continue;
             }
 
             // short option?
             if (substr($curr, 0, 1) == '-') {
-                $this->shortOption($input, $optionCollection, ltrim($curr, '-'));
+                $this->shortOption($input, ltrim($curr, '-'));
                 continue;
             }
 
@@ -65,7 +93,6 @@ class Getopt
      */
     protected function longOption(
         array &$input,
-        OptionCollection $optionCollection,
         string $name
     ) : void
     {
@@ -74,11 +101,11 @@ class Getopt
         if ($pos !== false) {
             $value = substr($name, $pos + 1);
             $name = substr($name, 0, $pos);
-            $optionCollection->get($name)->equals($value, $this->filter);
+            $this->getOptionByName($name)->equals($value, $this->filter);
             return;
         }
 
-        $optionCollection->get($name)->capture($input, $this->filter);
+        $this->getOptionByName($name)->capture($input, $this->filter);
     }
 
     /**
@@ -86,12 +113,11 @@ class Getopt
      */
     protected function shortOption(
         array &$input,
-        OptionCollection $optionCollection,
         string $name
     ) : void
     {
         if (strlen($name) == 1) {
-            $optionCollection->get($name)->capture($input, $this->filter);
+            $this->getOptionByName($name)->capture($input, $this->filter);
             return;
         }
 
@@ -99,9 +125,9 @@ class Getopt
         $final = array_pop($chars);
 
         foreach ($chars as $char) {
-            $optionCollection->get($char)->equals('', $this->filter);
+            $this->getOptionByName($char)->equals('', $this->filter);
         }
 
-        $optionCollection->get($final)->capture($input, $this->filter);
+        $this->getOptionByName($final)->capture($input, $this->filter);
     }
 }

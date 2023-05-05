@@ -10,11 +10,11 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $this->getopt = new Getopt(new Filter());
     }
 
-    protected function assertSameValues(array $expect, OptionCollection $optionCollection)
+    protected function assertSameValues(array $expect, array $attributes)
     {
         $actual = [];
 
-        foreach ($optionCollection as $option) {
+        foreach ($attributes as $option) {
             foreach ($option->names as $name) {
                 $actual[$name] = $option->getValue();
             }
@@ -25,95 +25,95 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
 
     public function testParse_noOptions()
     {
-        $optionCollection = new OptionCollection();
+        $attributes = [];
         $input = ['abc', 'def'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
-        $this->assertCount(0, $optionCollection);
+        $arguments = $this->getopt->parse($attributes, $input);
+        $this->assertCount(0, $attributes);
         $expect = ['abc', 'def'];
         $this->assertSame($expect, $input);
     }
 
     public function testParse_undefinedOption()
     {
-        $optionCollection = new OptionCollection();
+        $attributes = [];
         $input = ['-z', 'def'];
         $this->expectException(Exception\OptionNotDefined::class);
         $this->expectExceptionMessage("-z is not defined.");
-        $this->getopt->parse($optionCollection, $input);
+        $this->getopt->parse($attributes, $input);
     }
 
     public function testParse_longRejected()
     {
-        $optionCollection = new OptionCollection([
-            new Option('foo-bar'),
-        ]);
+        $attributes = [
+            'foo_bar' => new Option('foo-bar'),
+        ];
         $input = ['--foo-bar'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
         $expect = ['foo-bar' => true];
-        $this->assertSameValues($expect, $optionCollection);
+        $this->assertSameValues($expect, $attributes);
 
-        $optionCollection = new OptionCollection([
-            new Option('foo-bar'),
-        ]);
+        $attributes = [
+            'foo_bar' => new Option('foo-bar'),
+        ];
         $input = ['--foo-bar=baz'];
         $this->expectException(Exception\ArgumentRejected::class);
         $this->expectExceptionMessage("--foo-bar does not accept an argument.");
-        $this->getopt->parse($optionCollection, $input);
+        $this->getopt->parse($attributes, $input);
     }
 
     public function testParse_longRequired()
     {
         // '=' as separator
-        $optionCollection = new OptionCollection([
-            new Option('foo-bar', argument: Option::VALUE_REQUIRED)
-        ]);
+        $attributes = [
+            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_REQUIRED)
+        ];
         $input = ['--foo-bar=baz'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
         $expect = ['foo-bar' => 'baz'];
-        $this->assertSameValues($expect, $optionCollection);
+        $this->assertSameValues($expect, $attributes);
 
         // ' ' as separator
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('foo-bar', argument: Option::VALUE_REQUIRED)
-        ]);
+        ];
         $input = ['--foo-bar', 'baz'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
-        $this->assertSameValues($expect, $optionCollection);
+        $arguments = $this->getopt->parse($attributes, $input);
+        $this->assertSameValues($expect, $attributes);
 
         // missing required value
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('foo-bar', argument: Option::VALUE_REQUIRED)
-        ]);
+        ];
         $input = ['--foo-bar'];
         $this->expectException(Exception\ArgumentRequired::class);
         $this->expectExceptionMessage("--foo-bar requires an argument.");
-        $this->getopt->parse($optionCollection, $input);
+        $this->getopt->parse($attributes, $input);
     }
 
     public function testParse_longOptional()
     {
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('foo-bar', argument: Option::VALUE_OPTIONAL)
-        ]);
+        ];
         $input = ['--foo-bar'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
         $expect = ['foo-bar' => true];
-        $this->assertSameValues($expect, $optionCollection);
+        $this->assertSameValues($expect, $attributes);
 
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('foo-bar', argument: Option::VALUE_OPTIONAL)
-        ]);
+        ];
         $input = ['--foo-bar=baz'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
         $expect = ['foo-bar' => 'baz'];
-        $this->assertSameValues($expect, $optionCollection);
+        $this->assertSameValues($expect, $attributes);
     }
 
     public function testParse_longMultiple()
     {
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('foo-bar', argument: Option::VALUE_OPTIONAL, multiple: true)
-        ]);
+        ];
 
         $input = [
             '--foo-bar',
@@ -122,120 +122,120 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             '--foo-bar=dib',
             '--foo-bar'
         ];
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
         $expect = ['foo-bar' => [true, true, 'baz', 'dib', true]];
-        $this->assertSameValues($expect, $optionCollection);
+        $this->assertSameValues($expect, $attributes);
     }
 
     public function testParse_shortRejected()
     {
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('f')
-        ]);
+        ];
         $input = ['-f'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
         $expect = ['f' => true];
-        $this->assertSameValues($expect, $optionCollection);
+        $this->assertSameValues($expect, $attributes);
 
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('f')
-        ]);
+        ];
         $input = ['-f', 'baz'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
         $expect = ['f' => true];
-        $this->assertSameValues($expect, $optionCollection);
+        $this->assertSameValues($expect, $attributes);
         $this->assertSame(['baz'], $arguments);
     }
 
     public function testParse_shortRequired()
     {
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('f', argument: Option::VALUE_REQUIRED)
-        ]);
+        ];
         $input = ['-f', 'baz'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
         $expect = ['f' => 'baz'];
-        $this->assertSameValues($expect, $optionCollection);
+        $this->assertSameValues($expect, $attributes);
 
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('f', argument: Option::VALUE_REQUIRED)
-        ]);
+        ];
         $input = ['-f'];
         $this->expectException(Exception\ArgumentRequired::class);
         $this->expectExceptionMessage("-f requires an argument.");
-        $this->getopt->parse($optionCollection, $input);
+        $this->getopt->parse($attributes, $input);
     }
 
     public function testParse_shortOptional()
     {
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('f', argument: Option::VALUE_OPTIONAL)
-        ]);
+        ];
         $input = ['-f'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
         $expect = ['f' => true];
-        $this->assertSameValues($expect, $optionCollection);
+        $this->assertSameValues($expect, $attributes);
 
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('f', argument: Option::VALUE_OPTIONAL)
-        ]);
+        ];
         $input = ['-f', 'baz'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
         $expect = ['f' => 'baz'];
-        $this->assertSameValues($expect, $optionCollection);
+        $this->assertSameValues($expect, $attributes);
     }
 
     public function testParse_shortMultiple()
     {
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('f', argument: Option::VALUE_OPTIONAL, multiple: true)
-        ]);
+        ];
 
         $input = ['-f', '-f', '-f', 'baz', '-f', 'dib', '-f'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
         $expect = ['f' => [true, true, 'baz', 'dib', true]];
-        $this->assertSameValues($expect, $optionCollection);
+        $this->assertSameValues($expect, $attributes);
     }
 
     public function testParse_shortCluster()
     {
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('f'),
             new Option('b'),
             new Option('z'),
-        ]);
+        ];
 
         $input = ['-fbz'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
         $expect = [
             'f' => true,
             'b' => true,
             'z' => true,
         ];
-        $this->assertSameValues($expect, $optionCollection);
+        $this->assertSameValues($expect, $attributes);
     }
 
     public function testParse_shortClusterRequired()
     {
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('f'),
             new Option('b', argument: Option::VALUE_REQUIRED),
             new Option('z'),
-        ]);
+        ];
 
         $input = ['-fbz'];
         $this->expectException(Exception\ArgumentRequired::class);
         $this->expectExceptionMessage("-b requires an argument.");
-        $this->getopt->parse($optionCollection, $input);
+        $this->getopt->parse($attributes, $input);
     }
 
     public function testParseAndGet()
     {
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('foo-bar', argument: Option::VALUE_REQUIRED),
             new Option('b'),
             new Option('z', argument: Option::VALUE_OPTIONAL),
-        ]);
+        ];
 
         $input = [
             'abc',
@@ -252,7 +252,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             'ghi',
         ];
 
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
 
         $expectOptv = [
             'foo-bar' => 'zim',
@@ -270,22 +270,22 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             'ghi',
         ];
 
-        $this->assertSameValues($expectOptv, $optionCollection);
+        $this->assertSameValues($expectOptv, $attributes);
         $this->assertSame($expectArgv, $arguments);
     }
 
     public function testMultipleWithAlias()
     {
-        $optionCollection = new OptionCollection([
+        $attributes = [
             new Option('-f,--foo', argument: Option::VALUE_OPTIONAL, multiple: true)
-        ]);
+        ];
 
         $input = ['-f', '-f', '-f', 'baz', '-f', 'dib', '-f'];
-        $arguments = $this->getopt->parse($optionCollection, $input);
+        $arguments = $this->getopt->parse($attributes, $input);
         $expect = [
             'f' => [true, true, 'baz', 'dib', true],
             'foo' => [true, true, 'baz', 'dib', true],
         ];
-        $this->assertSameValues($expect, $optionCollection);
+        $this->assertSameValues($expect, $attributes);
     }
 }

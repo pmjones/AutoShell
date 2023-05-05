@@ -99,7 +99,7 @@ class Shell
             $class = $this->getClass((string) array_shift($argv));
             $rc = $this->reflector->getClass($class);
             $rm = $this->reflector->getMethod($rc, $this->config->method);
-            $options = $this->getOptions($rm, $argv);
+            $options = $this->newOptions($rm, $argv);
             $arguments = $this->getArguments($rm, $argv);
         } catch (Throwable $e) {
             $error = get_class($e);
@@ -146,17 +146,15 @@ class Shell
     /**
      * @param array<int, string> &$argv
      */
-    protected function getOptions(
+    protected function newOptions(
         ReflectionMethod $rm,
         array &$argv
     ) : Options
     {
-        $optionCollection = $this->newOptionCollection($rm);
-        $argv = $this->getopt->parse($optionCollection, $argv);
-        return $this->newOptions(
-            $this->reflector->getOptionsClass($rm),
-            $optionCollection
-        );
+        $attributes = $this->reflector->getOptionAttributes($rm);
+        $argv = $this->getopt->parse($attributes, $argv);
+        $optionsClass = $this->reflector->getOptionsClass($rm);
+        return new $optionsClass($attributes);
     }
 
     /**
@@ -209,19 +207,5 @@ class Shell
             $value = array_shift($argv);
             $arguments[] = ($this->filter)($value, $type, $errmsg);
         }
-    }
-
-    protected function newOptionCollection(
-        ReflectionMethod $rm
-    ) : OptionCollection
-    {
-        return new OptionCollection(
-            $this->reflector->getOptionAttributes($rm)
-        );
-    }
-
-    protected function newOptions(string $optionsClass, OptionCollection $optionCollection) : Options
-    {
-        return new $optionsClass($optionCollection);
     }
 }

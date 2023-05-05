@@ -7,11 +7,11 @@ use ReflectionClass;
 
 class Options
 {
-    public function __construct(OptionCollection $optionCollection = new OptionCollection())
+    public function __construct(array $attributes = [])
     {
         $rc = new ReflectionClass($this);
 
-        foreach ($optionCollection as $property => $option) {
+        foreach ($attributes as $property => $option) {
             $rp = $rc->getProperty($property);
             $rp->setAccessible(true);
             $rp->setValue($this, $option->getValue());
