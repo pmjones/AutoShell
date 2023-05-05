@@ -5,7 +5,7 @@ namespace AutoShell;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
+#[Attribute(Attribute::TARGET_PROPERTY)]
 class Option
 {
     public const VALUE_REQUIRED = 'VALUE_REQUIRED';
@@ -21,11 +21,12 @@ class Option
 
     protected mixed $value = null;
 
+    protected ?string $type = null;
+
     public function __construct(
         string $names,
         public readonly string $argument = self::VALUE_REJECTED,
         public readonly bool $multiple = false,
-        public readonly ?string $type = null,
         public readonly mixed $default = null,
         public readonly ?string $help = null,
         public readonly ?string $argname = null,
@@ -46,6 +47,11 @@ class Option
         ) {
             throw new Exception\DefaultNotAllowed();
         }
+    }
+
+    public function setType(?string $type) : void
+    {
+        $this->type = $type;
     }
 
     public function getValue() : mixed

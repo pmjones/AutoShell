@@ -152,11 +152,11 @@ class Shell
     ) : Options
     {
         $optionsClass = $this->reflector->getOptionsClass($rm);
-        $attributes = $this->reflector->getOptionAttributes($optionsClass);
-        $argv = $this->getopt->parse($attributes, $argv);
+        $options = $this->reflector->getOptionAttributes($optionsClass);
+        $argv = $this->getopt->parse($options, $argv);
 
         /** @var Options */
-        return new $optionsClass($attributes);
+        return new $optionsClass($options);
     }
 
     /**

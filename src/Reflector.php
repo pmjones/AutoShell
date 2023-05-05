@@ -69,20 +69,21 @@ class Reflector
             return [];
         }
 
-        $attributes = [];
+        $options = [];
         $properties = $this->getClass($optionsClass)->getProperties();
 
         foreach ($properties as $property) {
             foreach ($property->getAttributes() as $attribute) {
                 if ($attribute->getName() === Option::class) {
                     /** @var Option */
-                    $instance = $attribute->newInstance();
-                    $attributes[$property->getName()] = $instance;
+                    $option = $attribute->newInstance();
+                    $option->setType((string) $property->getType());
+                    $options[$property->getName()] = $option;
                 }
             }
         }
 
-        return $attributes;
+        return $options;
     }
 
     /**
