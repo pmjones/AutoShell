@@ -34,6 +34,10 @@ class Roster
             /** @var class-string $class */
             $class = $this->config->namespace . $subclass;
 
+            if (! $this->reflector->isCommandClass($class)) {
+                continue;
+            }
+
             $rc = $this->reflector->getClass($class);
             $help = $this->reflector->getHelpAttribute($rc);
             $helpLine = '';

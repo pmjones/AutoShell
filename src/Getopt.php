@@ -24,7 +24,7 @@ class Getopt
         // arguments
         $arguments = [];
 
-        // loop through a copy of the input values to be parsed
+        // loop through the input values to be parsed
         while ($input) {
 
             // shift each element from the top of the $input source

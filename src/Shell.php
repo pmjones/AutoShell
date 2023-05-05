@@ -66,14 +66,16 @@ class Shell
             return new Exec(
                 class: Help\RosterCommand::class,
                 method: '__invoke',
+                options: new Options(),
             );
         }
 
         $commandName = (string) array_shift($argv);
 
         return new Exec(
-            class: Help\ManualCommand::CLASS,
+            class: Help\ManualCommand::class,
             method: '__invoke',
+            options: new Options(),
             arguments: [
                 $commandName,
                 $this->getClass($commandName),
@@ -96,8 +98,8 @@ class Shell
         try {
             $class = $this->getClass((string) array_shift($argv));
             $rc = $this->reflector->getClass($class);
-            $options = $this->getOptions($rc, $argv);
             $rm = $this->reflector->getMethod($rc, $this->config->method);
+            $options = $this->getOptions($rm, $argv);
             $arguments = $this->getArguments($rm, $argv);
         } catch (Throwable $e) {
             $error = get_class($e);
@@ -133,10 +135,11 @@ class Shell
 
         $class .= $this->config->suffix;
 
-        if (! class_exists($class)) {
+        if (! $this->reflector->isCommandClass($class)) {
             throw new Exception\ClassNotFound($commandName, $class);
         }
 
+        /** @var class-string */
         return $class;
     }
 
@@ -144,13 +147,16 @@ class Shell
      * @param array<int, string> &$argv
      */
     protected function getOptions(
-        ReflectionClass $rc,
+        ReflectionMethod $rm,
         array &$argv
     ) : Options
     {
-        $optionCollection = $this->newOptionCollection($rc);
+        $optionCollection = $this->newOptionCollection($rm);
         $argv = $this->getopt->parse($optionCollection, $argv);
-        return $this->newOptions($optionCollection);
+        return $this->newOptions(
+            $this->reflector->getOptionsClass($rm),
+            $optionCollection
+        );
     }
 
     /**
@@ -206,16 +212,16 @@ class Shell
     }
 
     protected function newOptionCollection(
-        ReflectionClass $rc
+        ReflectionMethod $rm
     ) : OptionCollection
     {
         return new OptionCollection(
-            $this->reflector->getOptionAttributes($rc)
+            $this->reflector->getOptionAttributes($rm)
         );
     }
 
-    protected function newOptions(OptionCollection $optionCollection) : Options
+    protected function newOptions(string $optionsClass, OptionCollection $optionCollection) : Options
     {
-        return new Options($optionCollection);
+        return new $optionsClass($optionCollection);
     }
 }

@@ -5,7 +5,7 @@ namespace AutoShell;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
+#[Attribute(Attribute::TARGET_PROPERTY | Attribute::IS_REPEATABLE)]
 class Option
 {
     public const VALUE_REQUIRED = 'VALUE_REQUIRED';

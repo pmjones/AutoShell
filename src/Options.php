@@ -3,95 +3,18 @@ declare(strict_types=1);
 
 namespace AutoShell;
 
-use ArrayAccess;
+use ReflectionClass;
 
-class Options implements ArrayAccess
+class Options
 {
-    public function __construct(
-        protected OptionCollection $optionCollection = new OptionCollection()
-    ) {
-    }
-
-    public function __get(string $key) : mixed
+    public function __construct(OptionCollection $optionCollection = new OptionCollection())
     {
-        return $this->optionCollection->get($key)->getValue();
-    }
+        $rc = new ReflectionClass($this);
 
-    public function __set(string $key, mixed $val) : void
-    {
-        $class = get_class($this);
-        throw new Exception\OptionsReadonly("Cannot set {$class}::\${$key}.");
-    }
-
-    public function __isset(string $key) : bool
-    {
-        if (! $this->optionCollection->has($key)) {
-            return false;
+        foreach ($optionCollection as $property => $option) {
+            $rp = $rc->getProperty($property);
+            $rp->setAccessible(true);
+            $rp->setValue($this, $option->getValue());
         }
-
-        return $this->optionCollection->get($key)->getValue() !== null;
-    }
-
-    public function __unset(string $key) : void
-    {
-        $class = get_class($this);
-        throw new Exception\OptionsReadonly("Cannot unset {$class}::\${$key}.");
-    }
-
-    /**
-     * @param string $key
-     * @return mixed
-     */
-    public function offsetGet(mixed $key) : mixed
-    {
-        return $this->optionCollection->get($key)->getValue();
-    }
-
-    /**
-     * @param string $key
-     * @param mixed $val
-     */
-    public function offsetSet(mixed $key, mixed $val) : void
-    {
-        $class = get_class($this);
-        throw new Exception\OptionsReadonly("Cannot set {$class}::\${$key}.");
-    }
-
-    /**
-     * @param string $key
-     */
-    public function offsetExists(mixed $key) : bool
-    {
-        if (! $this->optionCollection->has($key)) {
-            return false;
-        }
-
-        return $this->optionCollection->get($key)->getValue() !== null;
-    }
-
-    /**
-     * @param string $key
-     */
-    public function offsetUnset(mixed $key) : void
-    {
-        $class = get_class($this);
-        throw new Exception\OptionsReadonly("Cannot unset {$class}::\${$key}.");
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    public function asArray() : array
-    {
-        $values = [];
-
-        foreach ($this->optionCollection as $name => $option) {
-            foreach ($option->names as $name) {
-                $values[$name] = $option->getValue();
-            }
-        }
-
-        /** @var array<string, mixed> */
-        return $values;
     }
 }

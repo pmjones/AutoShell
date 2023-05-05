@@ -37,7 +37,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
     {
         $optionCollection = new OptionCollection();
         $input = ['-z', 'def'];
-        $this->expectException(Exception\OptionNotDefined::CLASS);
+        $this->expectException(Exception\OptionNotDefined::class);
         $this->expectExceptionMessage("-z is not defined.");
         $this->getopt->parse($optionCollection, $input);
     }
@@ -56,7 +56,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             new Option('foo-bar'),
         ]);
         $input = ['--foo-bar=baz'];
-        $this->expectException(Exception\ArgumentRejected::CLASS);
+        $this->expectException(Exception\ArgumentRejected::class);
         $this->expectExceptionMessage("--foo-bar does not accept an argument.");
         $this->getopt->parse($optionCollection, $input);
     }
@@ -85,7 +85,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             new Option('foo-bar', argument: Option::VALUE_REQUIRED)
         ]);
         $input = ['--foo-bar'];
-        $this->expectException(Exception\ArgumentRequired::CLASS);
+        $this->expectException(Exception\ArgumentRequired::class);
         $this->expectExceptionMessage("--foo-bar requires an argument.");
         $this->getopt->parse($optionCollection, $input);
     }
@@ -161,7 +161,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             new Option('f', argument: Option::VALUE_REQUIRED)
         ]);
         $input = ['-f'];
-        $this->expectException(Exception\ArgumentRequired::CLASS);
+        $this->expectException(Exception\ArgumentRequired::class);
         $this->expectExceptionMessage("-f requires an argument.");
         $this->getopt->parse($optionCollection, $input);
     }
@@ -224,7 +224,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $input = ['-fbz'];
-        $this->expectException(Exception\ArgumentRequired::CLASS);
+        $this->expectException(Exception\ArgumentRequired::class);
         $this->expectExceptionMessage("-b requires an argument.");
         $this->getopt->parse($optionCollection, $input);
     }

@@ -97,7 +97,6 @@ TEXT;
         $this->assertStderr('');
     }
 
-
     public function testFailure()
     {
         $exit = ($this->console)(['run.php', 'foo-bar:qux', '--no-such-option']);

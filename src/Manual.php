@@ -24,6 +24,7 @@ class Manual
     ) : string
     {
         $rc = $this->reflector->getClass($class);
+        $rm = $this->reflector->getMethod($rc, $method);
 
         $name = $this->name($rc);
 
@@ -33,13 +34,12 @@ class Manual
 
         $synopsis = $this->format->bold($commandName);
 
-        $options = $this->options($rc);
+        $options = $this->options($rm);
 
         if ($options) {
             $synopsis .= " [options]";
         }
 
-        $rm = $this->reflector->getMethod($rc, $method);
         $argumentSynopsis = $this->argumentSynopsis($rm);
 
         if ($argumentSynopsis) {
@@ -102,11 +102,11 @@ class Manual
         return implode(' ', $arguments);
     }
 
-    protected function options(ReflectionClass $rc) : string
+    protected function options(ReflectionMethod $rm) : string
     {
         $out = [];
 
-        $options = $this->reflector->getOptionAttributes($rc);
+        $options = $this->reflector->getOptionAttributes($rm);
 
         if (count($options) === 0) {
             return '';

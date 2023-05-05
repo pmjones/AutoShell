@@ -16,7 +16,7 @@ class ManualTest extends \PHPUnit\Framework\TestCase
         $actual = $this->format->strip(
             ($this->manual)(
                 'foo-bar:dib',
-                Fake\Command\FooBar\Dib::CLASS,
+                Fake\Command\FooBar\Dib::class,
                 '__invoke'
             )
         );
@@ -68,7 +68,7 @@ TEXT;
         $actual = $this->format->strip(
             ($this->manual)(
                 'foo-bar:qux',
-                Fake\Command\FooBar\Qux::CLASS,
+                Fake\Command\FooBar\Qux::class,
                 '__invoke'
             )
         );
@@ -91,7 +91,7 @@ TEXT;
         $actual = $this->format->strip(
             ($this->manual)(
                 'foo-bar:baz',
-                Fake\Command\FooBar\Baz::CLASS,
+                Fake\Command\FooBar\Baz::class,
                 '__invoke'
             )
         );

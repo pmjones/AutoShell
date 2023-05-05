@@ -34,20 +34,53 @@ class Reflector
             : $type->getName(); // @phpstan-ignore-line
     }
 
-    /**
-     * @return Option[]
-     */
-    public function getOptionAttributes(ReflectionClass $rc) : array
+    public function isOptionsClass(string $class) : bool
     {
-        $attributes = [];
+        return is_a($class, Options::class, true);
+    }
 
-        foreach ($rc->getAttributes() as $attribute) {
-            if ($attribute->getName() === Option::CLASS) {
-                $attributes[] = $attribute->newInstance();
+    public function getOptionsClass(ReflectionMethod $rm) : ?string
+    {
+        $parameters = $rm->getParameters();
+
+        foreach ($parameters as $parameter) {
+            $type = $this->getParameterType($parameter);
+            if ($this->isOptionsClass($type)) {
+                return $type;
             }
         }
 
-        /** @var Option[] */
+        return null;
+    }
+
+    /**
+     * @return array<string, Option>
+     */
+    public function getOptionAttributes(ReflectionMethod $rm) : array
+    {
+        // look at method params
+        // first one that is_a(Options::class),
+        // reflect on *that* class, and collect
+        // attributes off of its properties.
+        $optionsClass = $this->getOptionsClass($rm);
+
+        if (! $optionsClass) {
+            return [];
+        }
+
+        $attributes = [];
+        $properties = $this->getClass($optionsClass)->getProperties();
+
+        foreach ($properties as $property) {
+            foreach ($property->getAttributes() as $attribute) {
+                if ($attribute->getName() === Option::class) {
+                    /** @var Option */
+                    $instance = $attribute->newInstance();
+                    $attributes[$property->getName()] = $instance;
+                }
+            }
+        }
+
         return $attributes;
     }
 
@@ -61,7 +94,7 @@ class Reflector
 
         while (! empty($rps)) {
             $rp = array_shift($rps);
-            if (static::getParameterType($rp) === Options::CLASS) {
+            if ($this->isOptionsClass($this->getParameterType($rp))) {
                 break;
             }
         }
@@ -78,12 +111,26 @@ class Reflector
     ) : ?Help
     {
         foreach ($spec->getAttributes() as $attribute) {
-            if ($attribute->getName() === Help::CLASS) {
+            if ($attribute->getName() === Help::class) {
                 /** @var Help */
                 return $attribute->newInstance();
             }
         }
 
         return null;
+    }
+
+    public function isCommandClass(string $class) : bool
+    {
+        if (
+            ! class_exists($class)
+            || interface_exists($class)
+            || trait_exists($class)
+            || is_a($class, Options::class, true)
+        ) {
+            return false;
+        }
+
+        return ! $this->getClass($class)->isAbstract();
     }
 }

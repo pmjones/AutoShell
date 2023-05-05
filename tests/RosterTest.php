@@ -14,7 +14,7 @@ class RosterTest extends \PHPUnit\Framework\TestCase
     protected function setUp() : void
     {
         $this->config = new Config(
-            namespace: Fake\Command::CLASS,
+            namespace: Fake\Command::class,
             directory: __DIR__ . '/Fake/Command',
         );
 
