@@ -15,13 +15,14 @@
         }
     },
     "require-dev": {
+        "pds/composer-script-names": "^1.0",
         "pds/skeleton": "^1.0",
         "phpunit/phpunit": "^9.0",
         "phpstan/phpstan": "^1.0"
     },
     "scripts": {
-        "test": "./vendor/bin/phpunit",
-        "cs-fix": "./vendor/bin/phpstan analyze --memory-limit=1G -c phpstan.neon src",
-        "check": "composer test && composer cs-fix"
+        "analyze": "./vendor/bin/phpstan analyze --memory-limit=1G -c phpstan.neon",
+        "check": "composer test && composer analyze",
+        "test": "./vendor/bin/phpunit"
     }
 }
