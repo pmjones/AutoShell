@@ -34,7 +34,7 @@ class Manual
 
         $synopsis = $this->format->bold($commandName);
 
-        $options = $this->options($rm);
+        $options = $this->options($this->reflector->getOptionsClass($rm));
 
         if ($options) {
             $synopsis .= " [options]";
@@ -102,11 +102,14 @@ class Manual
         return implode(' ', $arguments);
     }
 
-    protected function options(ReflectionMethod $rm) : string
+    /**
+     * @param class-string $optionsClass
+     */
+    protected function options(string $optionsClass) : string
     {
         $out = [];
 
-        $options = $this->reflector->getOptionAttributes($rm);
+        $options = $this->reflector->getOptionAttributes($optionsClass);
 
         if (count($options) === 0) {
             return '';

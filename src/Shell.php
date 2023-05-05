@@ -151,9 +151,11 @@ class Shell
         array &$argv
     ) : Options
     {
-        $attributes = $this->reflector->getOptionAttributes($rm);
-        $argv = $this->getopt->parse($attributes, $argv);
         $optionsClass = $this->reflector->getOptionsClass($rm);
+        $attributes = $this->reflector->getOptionAttributes($optionsClass);
+        $argv = $this->getopt->parse($attributes, $argv);
+
+        /** @var Options */
         return new $optionsClass($attributes);
     }
 

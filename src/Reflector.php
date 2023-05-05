@@ -39,28 +39,32 @@ class Reflector
         return is_a($class, Options::class, true);
     }
 
-    public function getOptionsClass(ReflectionMethod $rm) : ?string
+    /**
+     * @return class-string
+     */
+    public function getOptionsClass(ReflectionMethod $rm) : string
     {
+        $optionsClass = '';
         $parameters = $rm->getParameters();
 
         foreach ($parameters as $parameter) {
             $type = $this->getParameterType($parameter);
             if ($this->isOptionsClass($type)) {
-                return $type;
+                $optionsClass = $type;
+                break;
             }
         }
 
-        return null;
+        /** @var class-string */
+        return $optionsClass;
     }
 
     /**
+     * @param class-string $optionsClass
      * @return array<string, Option>
      */
-    public function getOptionAttributes(ReflectionMethod $rm) : array
+    public function getOptionAttributes(string $optionsClass) : array
     {
-        /** @var class-string */
-        $optionsClass = $this->getOptionsClass($rm);
-
         if (! $optionsClass) {
             return [];
         }
