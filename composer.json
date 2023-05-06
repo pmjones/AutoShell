@@ -23,6 +23,7 @@
     "scripts": {
         "analyze": "./vendor/bin/phpstan analyze --memory-limit=1G -c phpstan.neon",
         "check": "composer test && composer analyze",
-        "test": "./vendor/bin/phpunit"
+        "test": "./vendor/bin/phpunit",
+        "test-coverage": "./vendor/bin/phpunit --coverage-html=./tmp/coverage"
     }
 }
