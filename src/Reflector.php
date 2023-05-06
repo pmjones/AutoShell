@@ -141,27 +141,30 @@ class Reflector
         return $this->isOptionsclass((string) $rp->getType());
     }
 
-    public function getSignature(ReflectionMethod $rm)
+    public function getSignature(string $class, string $method) : Signature
     {
+        $rc = $this->getClass($class);
+        $rm = $this->getMethod($rc, $method);
+
         $optionsPosition = null;
         $optionsClass = '';
         $optionAttributes = [];
         $argumentParameters = [];
 
-        foreach ($rm->getParameters() as $rp) {
+        foreach ($rm->getParameters() as $position => $rp) {
             if ($this->isOptionsParameter($rp)) {
                 $optionsClass = (string) $rp->getType();
-                $optionAttributes = $this->getOptionAttributes($optionsClass);
-            } else {
-                $argumentParameters[] = $rp;
+                $optionsPosition = $position;
             }
+            $argumentParameters[] = $rp;
         }
 
         return new Signature(
+            $argumentParameters,
             $optionsPosition,
             $optionsClass,
             $optionAttributes,
-            $argumentParameters,
+            $this,
         );
     }
 }

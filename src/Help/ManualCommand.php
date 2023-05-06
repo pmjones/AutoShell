@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace AutoShell\Help;
 
 use AutoShell\Manual;
-use AutoShell\Options;
 
 class ManualCommand extends HelpCommand
 {
@@ -12,7 +11,6 @@ class ManualCommand extends HelpCommand
      * @param class-string $class
      */
     public function __invoke(
-        Options $options,
         string $commandName,
         string $class,
         string $method

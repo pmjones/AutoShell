@@ -13,7 +13,6 @@ class Exec
     public function __construct(
         public readonly ?string $class = null,
         public readonly ?string $method = null,
-        public readonly ?Options $options = null,
         public readonly array $arguments = [],
         public readonly ?string $error = null,
         public readonly ?Throwable $exception = null,

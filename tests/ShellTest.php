@@ -24,8 +24,10 @@ class ShellTest extends \PHPUnit\Framework\TestCase
 
         $this->assertSame(Fake\Command\FooBar\Baz::class, $exec->class);
         $this->assertSame('__invoke', $exec->method);
-        $this->assertInstanceOf(BazOptions::class, $exec->options);
-        $this->assertSame([1, 'a', 'b', 'c'], $exec->arguments);
+        $this->assertInstanceOf(BazOptions::class, $exec->arguments[0]);
+        $actual = $exec->arguments;
+        array_shift($actual);
+        $this->assertSame([1, 'a', 'b', 'c'], $actual);
         $this->assertNull($exec->error);
         $this->assertNull($exec->exception);
     }

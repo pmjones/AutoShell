@@ -68,9 +68,8 @@ class Console
         if ($exec->error === null) {
             $command = $this->newCommand((string) $exec->class);
             $method = $exec->method;
-            $options = $exec->options;
             $arguments = $exec->arguments;
-            return $command->$method($options, ...$arguments);
+            return $command->$method(...$arguments);
         }
 
         /** @var Throwable $exception */

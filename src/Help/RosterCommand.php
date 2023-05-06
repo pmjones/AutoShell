@@ -3,12 +3,11 @@ declare(strict_types=1);
 
 namespace AutoShell\Help;
 
-use AutoShell\Options;
 use AutoShell\Roster;
 
 class RosterCommand extends HelpCommand
 {
-    public function __invoke(Options $options) : int
+    public function __invoke() : int
     {
         $output = '';
         $roster = new Roster($this->config);

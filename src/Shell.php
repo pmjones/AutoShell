@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace AutoShell;
 
-use ReflectionClass;
-use ReflectionMethod;
-use ReflectionParameter;
 use Stringable;
 use Throwable;
 
@@ -19,9 +16,6 @@ class Shell
         string|Stringable $header = '',
     ) : Shell
     {
-        $filter = new Filter();
-        $getopt = new Getopt($filter);
-
         return new Shell(
             new Config(
                 namespace: $namespace,
@@ -29,16 +23,12 @@ class Shell
                 method: $method,
                 suffix: $suffix,
                 header: $header,
-            ),
-            $getopt,
-            $filter,
+            )
         );
     }
 
     public function __construct(
         public readonly Config $config,
-        protected Getopt $getopt,
-        protected Filter $filter,
         protected Reflector $reflector = new Reflector()
     ) {
     }
@@ -66,7 +56,6 @@ class Shell
             return new Exec(
                 class: Help\RosterCommand::class,
                 method: '__invoke',
-                options: new Options(),
             );
         }
 
@@ -75,7 +64,6 @@ class Shell
         return new Exec(
             class: Help\ManualCommand::class,
             method: '__invoke',
-            options: new Options(),
             arguments: [
                 $commandName,
                 $this->getClass($commandName),
@@ -90,18 +78,14 @@ class Shell
     protected function newExec(array $argv): Exec
     {
         $class = null;
-        $options = null;
         $arguments = [];
         $error = null;
         $exception = null;
 
         try {
             $class = $this->getClass((string) array_shift($argv));
-            $rc = $this->reflector->getClass($class);
-            $rm = $this->reflector->getMethod($rc, $this->config->method);
-            $signature = $this->reflector->getSignature($rm);
-            $options = $this->newOptions($signature->optionsClass, $signature->optionAttributes, $argv);
-            $arguments = $this->getArguments($signature->argumentParameters, $argv);
+            $signature = $this->reflector->getSignature($class, $this->config->method);
+            $arguments = $signature->parse($argv);
         } catch (Throwable $e) {
             $error = get_class($e);
             $exception = $e;
@@ -110,7 +94,6 @@ class Shell
         return new Exec(
             class: $class,
             method: $this->config->method,
-            options: $options,
             arguments: $arguments,
             error: $error,
             exception: $exception,
@@ -142,77 +125,5 @@ class Shell
 
         /** @var class-string */
         return $class;
-    }
-
-    /**
-     * @param array<int, string> &$argv
-     */
-    protected function newOptions(
-        string $optionsClass,
-        array $optionAttributes,
-        array &$argv
-    ) : ?Options
-    {
-        if (! $optionsClass) {
-            // need to parse so we find undefined options in the $argv
-            $this->getopt->parse($optionAttributes, $argv);
-            return null;
-        }
-
-        $argv = $this->getopt->parse($optionAttributes, $argv);
-
-        /** @var Options */
-        return new $optionsClass($optionAttributes);
-    }
-
-    /**
-     * @param array<int, string> &$argv
-     * @return array<int, mixed>
-     */
-    protected function getArguments(
-        array $argumentParameters,
-        array &$argv
-    ) : array
-    {
-        $arguments = [];
-
-        foreach ($argumentParameters as $argumentParameter) {
-            $this->addArgument($argumentParameter, $argv, $arguments);
-        }
-
-        return $arguments;
-    }
-
-    /**
-     * @param array<int, string> &$argv
-     * @param array<int, mixed> &$arguments
-     */
-    protected function addArgument(
-        ReflectionParameter $parameter,
-        array &$argv,
-        array &$arguments
-    ) : void
-    {
-        $pos = count($arguments);
-        $name = $parameter->getName();
-        $type = $this->reflector->getParameterType($parameter);
-
-        if (empty($argv) && ! $parameter->isOptional()) {
-            throw new Exception\ArgumentRequired("Argument {$pos} (\${$name}) is missing.");
-        }
-
-        $errmsg = "Argument {$pos} (\${$name}) expected {$type} value";
-
-        if (! $parameter->isVariadic()) {
-            $value = array_shift($argv);
-            $arguments[] = ($this->filter)($value, $type, $errmsg);
-            return;
-        }
-
-        // variadic; capture all remaining argv
-        while (! empty($argv)) {
-            $value = array_shift($argv);
-            $arguments[] = ($this->filter)($value, $type, $errmsg);
-        }
     }
 }

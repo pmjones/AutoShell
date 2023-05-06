@@ -3,13 +3,18 @@ declare(strict_types=1);
 
 namespace AutoShell;
 
-class GetoptTest extends \PHPUnit\Framework\TestCase
+class SignatureTest extends \PHPUnit\Framework\TestCase
 {
-    protected Getopt $getopt;
-
-    protected function setUp() : void
+    protected function parseOptions(array $options, array $input) : array
     {
-        $this->getopt = new Getopt(new Filter());
+        $signature = new Signature(
+            argumentParameters: [],
+            optionsPosition: null,
+            optionsClass: '',
+            optionAttributes: $options,
+        );
+
+        return $signature->parseOptions($input);
     }
 
     /**
@@ -33,7 +38,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
     {
         $options = [];
         $input = ['abc', 'def'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $this->assertCount(0, $options);
         $expect = ['abc', 'def'];
         $this->assertSame($expect, $input);
@@ -45,7 +50,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $input = ['-z', 'def'];
         $this->expectException(Exception\OptionNotDefined::class);
         $this->expectExceptionMessage("-z is not defined.");
-        $this->getopt->parse($options, $input);
+        $this->parseOptions($options, $input);
     }
 
     public function testParse_longRejected() : void
@@ -54,7 +59,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             'foo_bar' => new Option('foo-bar'),
         ];
         $input = ['--foo-bar'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $expect = ['foo-bar' => true];
         $this->assertSameValues($expect, $options);
 
@@ -64,7 +69,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $input = ['--foo-bar=baz'];
         $this->expectException(Exception\ArgumentRejected::class);
         $this->expectExceptionMessage("--foo-bar does not accept an argument.");
-        $this->getopt->parse($options, $input);
+        $this->parseOptions($options, $input);
     }
 
     public function testParse_longRequired() : void
@@ -74,7 +79,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             'foo_bar' => new Option('foo-bar', argument: Option::VALUE_REQUIRED)
         ];
         $input = ['--foo-bar=baz'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $expect = ['foo-bar' => 'baz'];
         $this->assertSameValues($expect, $options);
 
@@ -83,7 +88,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             new Option('foo-bar', argument: Option::VALUE_REQUIRED)
         ];
         $input = ['--foo-bar', 'baz'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $this->assertSameValues($expect, $options);
 
         // missing required value
@@ -93,7 +98,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $input = ['--foo-bar'];
         $this->expectException(Exception\ArgumentRequired::class);
         $this->expectExceptionMessage("--foo-bar requires an argument.");
-        $this->getopt->parse($options, $input);
+        $this->parseOptions($options, $input);
     }
 
     public function testParse_longOptional() : void
@@ -102,7 +107,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             new Option('foo-bar', argument: Option::VALUE_OPTIONAL)
         ];
         $input = ['--foo-bar'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $expect = ['foo-bar' => true];
         $this->assertSameValues($expect, $options);
 
@@ -110,7 +115,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             new Option('foo-bar', argument: Option::VALUE_OPTIONAL)
         ];
         $input = ['--foo-bar=baz'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $expect = ['foo-bar' => 'baz'];
         $this->assertSameValues($expect, $options);
     }
@@ -128,7 +133,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             '--foo-bar=dib',
             '--foo-bar'
         ];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $expect = ['foo-bar' => [true, true, 'baz', 'dib', true]];
         $this->assertSameValues($expect, $options);
     }
@@ -139,7 +144,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             new Option('f')
         ];
         $input = ['-f'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $expect = ['f' => true];
         $this->assertSameValues($expect, $options);
 
@@ -147,7 +152,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             new Option('f')
         ];
         $input = ['-f', 'baz'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $expect = ['f' => true];
         $this->assertSameValues($expect, $options);
         $this->assertSame(['baz'], $arguments);
@@ -159,7 +164,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             new Option('f', argument: Option::VALUE_REQUIRED)
         ];
         $input = ['-f', 'baz'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $expect = ['f' => 'baz'];
         $this->assertSameValues($expect, $options);
 
@@ -169,7 +174,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $input = ['-f'];
         $this->expectException(Exception\ArgumentRequired::class);
         $this->expectExceptionMessage("-f requires an argument.");
-        $this->getopt->parse($options, $input);
+        $this->parseOptions($options, $input);
     }
 
     public function testParse_shortOptional() : void
@@ -178,7 +183,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             new Option('f', argument: Option::VALUE_OPTIONAL)
         ];
         $input = ['-f'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $expect = ['f' => true];
         $this->assertSameValues($expect, $options);
 
@@ -186,7 +191,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             new Option('f', argument: Option::VALUE_OPTIONAL)
         ];
         $input = ['-f', 'baz'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $expect = ['f' => 'baz'];
         $this->assertSameValues($expect, $options);
     }
@@ -198,7 +203,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         ];
 
         $input = ['-f', '-f', '-f', 'baz', '-f', 'dib', '-f'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $expect = ['f' => [true, true, 'baz', 'dib', true]];
         $this->assertSameValues($expect, $options);
     }
@@ -212,7 +217,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         ];
 
         $input = ['-fbz'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $expect = [
             'f' => true,
             'b' => true,
@@ -232,7 +237,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         $input = ['-fbz'];
         $this->expectException(Exception\ArgumentRequired::class);
         $this->expectExceptionMessage("-b requires an argument.");
-        $this->getopt->parse($options, $input);
+        $this->parseOptions($options, $input);
     }
 
     public function testParseAndGet() : void
@@ -258,7 +263,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
             'ghi',
         ];
 
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
 
         $expectOptv = [
             'foo-bar' => 'zim',
@@ -287,7 +292,7 @@ class GetoptTest extends \PHPUnit\Framework\TestCase
         ];
 
         $input = ['-f', '-f', '-f', 'baz', '-f', 'dib', '-f'];
-        $arguments = $this->getopt->parse($options, $input);
+        $arguments = $this->parseOptions($options, $input);
         $expect = [
             'f' => [true, true, 'baz', 'dib', true],
             'foo' => [true, true, 'baz', 'dib', true],
