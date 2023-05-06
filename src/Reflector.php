@@ -69,7 +69,7 @@ class Reflector
             return [];
         }
 
-        $options = [];
+        $optionAttributes = [];
         $properties = $this->getClass($optionsClass)->getProperties();
 
         foreach ($properties as $property) {
@@ -78,12 +78,12 @@ class Reflector
                     /** @var Option */
                     $option = $attribute->newInstance();
                     $option->setType((string) $property->getType());
-                    $options[$property->getName()] = $option;
+                    $optionAttributes[$property->getName()] = $option;
                 }
             }
         }
 
-        return $options;
+        return $optionAttributes;
     }
 
     /**
@@ -128,11 +128,38 @@ class Reflector
             ! class_exists($class)
             || interface_exists($class)
             || trait_exists($class)
-            || is_a($class, Options::class, true)
+            || $this->isOptionsClass($class)
         ) {
             return false;
         }
 
         return ! $this->getClass($class)->isAbstract();
+    }
+
+    public function isOptionsParameter(ReflectionParameter $rp) : bool
+    {
+        return $this->isOptionsclass((string) $rp->getType());
+    }
+
+    public function decomposeSignature(ReflectionMethod $rm)
+    {
+        $optionsClass = '';
+        $optionAttributes = [];
+        $argumentParameters = [];
+
+        foreach ($rm->getParameters() as $rp) {
+            if ($this->isOptionsParameter($rp)) {
+                $optionsClass = (string) $rp->getType();
+                $optionAttributes = $this->getOptionAttributes($optionsClass);
+            } else {
+                $argumentParameters[] = $rp;
+            }
+        }
+
+        return (object) [
+            'optionsClass' => $optionsClass,
+            'optionAttributes' => $optionAttributes,
+            'argumentParameters' => $argumentParameters,
+        ];
     }
 }

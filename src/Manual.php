@@ -109,15 +109,15 @@ class Manual
     {
         $out = [];
 
-        $options = $this->reflector->getOptionAttributes($optionsClass);
+        $optionAttributes = $this->reflector->getOptionAttributes($optionsClass);
 
-        if (count($options) === 0) {
+        if (count($optionAttributes) === 0) {
             return '';
         }
 
         $out[] = $this->format->bold("OPTIONS");
 
-        foreach ($options as $option) {
+        foreach ($optionAttributes as $option) {
 
             $default = '';
 

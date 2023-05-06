@@ -8,13 +8,13 @@ use ReflectionClass;
 class Options
 {
     /**
-     * @param array<string, Option> $options
+     * @param array<string, Option> $optionAttributes
      */
-    public function __construct(array $options = [])
+    public function __construct(array $optionAttributes = [])
     {
         $rc = new ReflectionClass($this);
 
-        foreach ($options as $property => $option) {
+        foreach ($optionAttributes as $property => $option) {
             $rp = $rc->getProperty($property);
             $rp->setAccessible(true);
             $rp->setValue($this, $option->getValue());

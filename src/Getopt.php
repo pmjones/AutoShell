@@ -13,7 +13,7 @@ class Getopt
     /**
      * @var array<string, Option>
      */
-    protected array $options = [];
+    protected array $optionAttributes = [];
 
     public function __construct(protected Filter $filter = new Filter())
     {
@@ -36,18 +36,18 @@ class Getopt
     }
 
     /**
-     * @param array<string, Option> &$options
+     * @param array<string, Option> &$optionAttributes
      * @param array<int, string> $input
      * @return array<int, mixed>
      */
     public function parse(
-        array &$options,
+        array &$optionAttributes,
         array $input
     ) : array
     {
-        $this->options = $options;
+        $this->optionAttributes = &$optionAttributes;
 
-        foreach ($this->options as $option) {
+        foreach ($this->optionAttributes as $option) {
             foreach ($option->names as $name) {
                 $this->names[$name] = $option;
             }

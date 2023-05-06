@@ -99,8 +99,9 @@ class Shell
             $class = $this->getClass((string) array_shift($argv));
             $rc = $this->reflector->getClass($class);
             $rm = $this->reflector->getMethod($rc, $this->config->method);
-            $options = $this->newOptions($rm, $argv);
-            $arguments = $this->getArguments($rm, $argv);
+            $signature = $this->reflector->decomposeSignature($rm);
+            $options = $this->newOptions($signature->optionsClass, $signature->optionAttributes, $argv);
+            $arguments = $this->getArguments($signature->argumentParameters, $argv);
         } catch (Throwable $e) {
             $error = get_class($e);
             $exception = $e;
@@ -147,16 +148,21 @@ class Shell
      * @param array<int, string> &$argv
      */
     protected function newOptions(
-        ReflectionMethod $rm,
+        string $optionsClass,
+        array $optionAttributes,
         array &$argv
-    ) : Options
+    ) : ?Options
     {
-        $optionsClass = $this->reflector->getOptionsClass($rm);
-        $options = $this->reflector->getOptionAttributes($optionsClass);
-        $argv = $this->getopt->parse($options, $argv);
+        if (! $optionsClass) {
+            // need to parse so we find undefined options in the $argv
+            $this->getopt->parse($optionAttributes, $argv);
+            return null;
+        }
+
+        $argv = $this->getopt->parse($optionAttributes, $argv);
 
         /** @var Options */
-        return new $optionsClass($options);
+        return new $optionsClass($optionAttributes);
     }
 
     /**
@@ -164,12 +170,11 @@ class Shell
      * @return array<int, mixed>
      */
     protected function getArguments(
-        ReflectionMethod $rm,
+        array $argumentParameters,
         array &$argv
     ) : array
     {
         $arguments = [];
-        $argumentParameters = $this->reflector->getArgumentParameters($rm);
 
         foreach ($argumentParameters as $argumentParameter) {
             $this->addArgument($argumentParameter, $argv, $arguments);
