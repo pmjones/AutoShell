@@ -99,7 +99,7 @@ class Shell
             $class = $this->getClass((string) array_shift($argv));
             $rc = $this->reflector->getClass($class);
             $rm = $this->reflector->getMethod($rc, $this->config->method);
-            $signature = $this->reflector->decomposeSignature($rm);
+            $signature = $this->reflector->getSignature($rm);
             $options = $this->newOptions($signature->optionsClass, $signature->optionAttributes, $argv);
             $arguments = $this->getArguments($signature->argumentParameters, $argv);
         } catch (Throwable $e) {

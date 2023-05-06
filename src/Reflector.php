@@ -141,8 +141,9 @@ class Reflector
         return $this->isOptionsclass((string) $rp->getType());
     }
 
-    public function decomposeSignature(ReflectionMethod $rm)
+    public function getSignature(ReflectionMethod $rm)
     {
+        $optionsPosition = null;
         $optionsClass = '';
         $optionAttributes = [];
         $argumentParameters = [];
@@ -156,10 +157,11 @@ class Reflector
             }
         }
 
-        return (object) [
-            'optionsClass' => $optionsClass,
-            'optionAttributes' => $optionAttributes,
-            'argumentParameters' => $argumentParameters,
-        ];
+        return new Signature(
+            $optionsPosition,
+            $optionsClass,
+            $optionAttributes,
+            $argumentParameters,
+        );
     }
 }
