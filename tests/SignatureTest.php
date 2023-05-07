@@ -5,6 +5,11 @@ namespace AutoShell;
 
 class SignatureTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * @param array<string, Option> $options
+     * @param array<int, string> $input
+     * @return mixed[]
+     */
     protected function parseOptions(array $options, array $input) : array
     {
         $signature = new Signature(
@@ -85,7 +90,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
 
         // ' ' as separator
         $options = [
-            new Option('foo-bar', argument: Option::VALUE_REQUIRED)
+            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_REQUIRED)
         ];
         $input = ['--foo-bar', 'baz'];
         $arguments = $this->parseOptions($options, $input);
@@ -93,7 +98,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
 
         // missing required value
         $options = [
-            new Option('foo-bar', argument: Option::VALUE_REQUIRED)
+            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_REQUIRED)
         ];
         $input = ['--foo-bar'];
         $this->expectException(Exception\ArgumentRequired::class);
@@ -104,7 +109,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
     public function testParse_longOptional() : void
     {
         $options = [
-            new Option('foo-bar', argument: Option::VALUE_OPTIONAL)
+            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_OPTIONAL)
         ];
         $input = ['--foo-bar'];
         $arguments = $this->parseOptions($options, $input);
@@ -112,7 +117,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
         $this->assertSameValues($expect, $options);
 
         $options = [
-            new Option('foo-bar', argument: Option::VALUE_OPTIONAL)
+            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_OPTIONAL)
         ];
         $input = ['--foo-bar=baz'];
         $arguments = $this->parseOptions($options, $input);
@@ -123,7 +128,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
     public function testParse_longMultiple() : void
     {
         $options = [
-            new Option('foo-bar', argument: Option::VALUE_OPTIONAL, multiple: true)
+            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_OPTIONAL, multiple: true)
         ];
 
         $input = [
@@ -141,7 +146,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
     public function testParse_shortRejected() : void
     {
         $options = [
-            new Option('f')
+            'f' => new Option('f')
         ];
         $input = ['-f'];
         $arguments = $this->parseOptions($options, $input);
@@ -149,7 +154,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
         $this->assertSameValues($expect, $options);
 
         $options = [
-            new Option('f')
+            'f' => new Option('f')
         ];
         $input = ['-f', 'baz'];
         $arguments = $this->parseOptions($options, $input);
@@ -161,7 +166,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
     public function testParse_shortRequired() : void
     {
         $options = [
-            new Option('f', argument: Option::VALUE_REQUIRED)
+            'f' => new Option('f', argument: Option::VALUE_REQUIRED)
         ];
         $input = ['-f', 'baz'];
         $arguments = $this->parseOptions($options, $input);
@@ -169,7 +174,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
         $this->assertSameValues($expect, $options);
 
         $options = [
-            new Option('f', argument: Option::VALUE_REQUIRED)
+            'f' => new Option('f', argument: Option::VALUE_REQUIRED)
         ];
         $input = ['-f'];
         $this->expectException(Exception\ArgumentRequired::class);
@@ -180,7 +185,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
     public function testParse_shortOptional() : void
     {
         $options = [
-            new Option('f', argument: Option::VALUE_OPTIONAL)
+            'f' => new Option('f', argument: Option::VALUE_OPTIONAL)
         ];
         $input = ['-f'];
         $arguments = $this->parseOptions($options, $input);
@@ -188,7 +193,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
         $this->assertSameValues($expect, $options);
 
         $options = [
-            new Option('f', argument: Option::VALUE_OPTIONAL)
+            'f' => new Option('f', argument: Option::VALUE_OPTIONAL)
         ];
         $input = ['-f', 'baz'];
         $arguments = $this->parseOptions($options, $input);
@@ -199,7 +204,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
     public function testParse_shortMultiple() : void
     {
         $options = [
-            new Option('f', argument: Option::VALUE_OPTIONAL, multiple: true)
+            'f' => new Option('f', argument: Option::VALUE_OPTIONAL, multiple: true)
         ];
 
         $input = ['-f', '-f', '-f', 'baz', '-f', 'dib', '-f'];
@@ -211,9 +216,9 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
     public function testParse_shortCluster() : void
     {
         $options = [
-            new Option('f'),
-            new Option('b'),
-            new Option('z'),
+            'f' => new Option('f'),
+            'b' => new Option('b'),
+            'z' => new Option('z'),
         ];
 
         $input = ['-fbz'];
@@ -229,9 +234,9 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
     public function testParse_shortClusterRequired() : void
     {
         $options = [
-            new Option('f'),
-            new Option('b', argument: Option::VALUE_REQUIRED),
-            new Option('z'),
+            'f' => new Option('f'),
+            'b' => new Option('b', argument: Option::VALUE_REQUIRED),
+            'z' => new Option('z'),
         ];
 
         $input = ['-fbz'];
@@ -243,9 +248,9 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
     public function testParseAndGet() : void
     {
         $options = [
-            new Option('foo-bar', argument: Option::VALUE_REQUIRED),
-            new Option('b'),
-            new Option('z', argument: Option::VALUE_OPTIONAL),
+            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_REQUIRED),
+            'b' => new Option('b'),
+            'z' => new Option('z', argument: Option::VALUE_OPTIONAL),
         ];
 
         $input = [
@@ -288,7 +293,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
     public function testMultipleWithAlias() : void
     {
         $options = [
-            new Option('-f,--foo', argument: Option::VALUE_OPTIONAL, multiple: true)
+            'foo' => new Option('-f,--foo', argument: Option::VALUE_OPTIONAL, multiple: true)
         ];
 
         $input = ['-f', '-f', '-f', 'baz', '-f', 'dib', '-f'];

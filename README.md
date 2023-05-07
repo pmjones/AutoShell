@@ -196,9 +196,10 @@ Likewise, the command name `schema:dump` maps to the class
 If the command class has defined _Options_ and parameters, the option and
 argument values will be collected from the command line invocation.
 
-The _Shell_ will parse the command name to find the correct class, then reflect
-on that class to find the available options and arguments, and parse those out
-as well.
+The _Shell_ will parse the command name to find the correct class, then
+reflect on that class to find the available options and arguments, and parse
+those out as well. (The _Shell_ ignores interfaces, traits, absrtact classes,
+and _Options_ classes.)
 
 Note that the _Shell_ **does not** presume any particular return type from the
 Command classes. Typically this is an `int` representing an exit code, but that

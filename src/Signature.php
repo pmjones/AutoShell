@@ -7,10 +7,20 @@ use ReflectionParameter;
 
 class Signature
 {
+    /**
+     * @var array<int, string>
+     */
     protected array $argv = [];
 
+    /**
+     * @var array<string, Option>
+     */
     protected array $optionsByName = [];
 
+    /**
+     * @param array <int, ReflectionParameter> $argumentParameters
+     * @param array <string, Option> $optionAttributes
+     */
     public function __construct(
         protected array $argumentParameters,
         protected ?int $optionsPosition,
@@ -26,6 +36,10 @@ class Signature
         }
     }
 
+    /**
+     * @param array<int, string> $argv
+     * @return mixed[]
+     */
     public function parse(array $argv) : array
     {
         $this->parseOptions($argv);
@@ -45,6 +59,10 @@ class Signature
         return $arguments;
     }
 
+    /**
+     * @param array<int, string> $argv
+     * @return array<int, string>
+     */
     public function parseOptions(array $argv) : array
     {
         $this->argv = $argv;
@@ -124,7 +142,7 @@ class Signature
         $this->getOptionByName($final)->capture($this->argv, $this->filter);
     }
 
-    protected function getOptionByName(string $name) : ?Option
+    protected function getOptionByName(string $name) : Option
     {
         $name = ltrim($name, '-');
 

@@ -141,6 +141,9 @@ class Reflector
         return $this->isOptionsclass((string) $rp->getType());
     }
 
+    /**
+     * @param class-string $class
+     */
     public function getSignature(string $class, string $method) : Signature
     {
         $rc = $this->getClass($class);
