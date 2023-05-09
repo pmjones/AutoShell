@@ -109,10 +109,10 @@ That's all -- the command should now be available via the console script. If you
 
 ### Adding Options
 
-To enable options on the command, create a class that extends _Options_, using
-`#[Option]` attributes on constructor-promoted properties. Then add
-that _Options_ class to the `__invoke()` parameters to make those options
-available to the command logic.
+To enable options on the command, create a class that implements the _Options_
+marker interface, using `#[Option]` attributes on constructor-promoted
+properties. Then add that _Options_ implementation to the `__invoke()`
+parameters to make those options available to the command logic.
 
 First, open a file at `src/Project/Cli/Command/HelloOptions` and add the
 following code:
@@ -123,7 +123,7 @@ namespace Project\Cli\Command\HelloOptions;
 use AutoShell\Option;
 use AutoShell\Options;
 
-class HelloOptions extends Options
+class HelloOptions implements Options
 {
     public function __construct(
 
@@ -204,7 +204,7 @@ namespace Project\Cli\Command\HelloOptions;
 use AutoShell\Option;
 use AutoShell\Options;
 
-class HelloOptions extends Options
+class HelloOptions implements Options
 {
     public function __construct(
 
@@ -322,14 +322,15 @@ Finally, trailing variadic parameters are also honored by _AutoShell_.
 ### Option Descriptions
 
 You can define long and short options for your command by adding an
-`#[Option]` attribute to a constructor-promoted property in an
-extended _Options_ class.
+`#[Option]` attribute to a constructor-promoted property in a class
+that implements _Options_ marker interface.
 
 The property name can be anything you like, but must be nullable.
 (_AutoShell_ indicates an option was not passed at the command line by
 setting it to `null`).
 
-It should be defined as `readonly`, and should not have a default value.
+The property should be defined as `readonly`, and should not have a default
+value.
 
 The first `#[Option]` parameter, a comma-separated list of short and long
 names for the option, is the only one required:

@@ -6,7 +6,7 @@ namespace AutoShell\Fake\Command\FooBar;
 use AutoShell\Option;
 use AutoShell\Options;
 
-class DibOptions extends Options
+class DibOptions implements Options
 {
     public function __construct(
 

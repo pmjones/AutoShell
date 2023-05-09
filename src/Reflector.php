@@ -36,7 +36,7 @@ class Reflector
 
     public function isOptionsClass(string $class) : bool
     {
-        return is_a($class, Options::class, true);
+        return is_subclass_of($class, Options::class, true);
     }
 
     /**

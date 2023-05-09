@@ -6,7 +6,7 @@ namespace AutoShell\Fake\Command\FooBar;
 use AutoShell\Option;
 use AutoShell\Options;
 
-class BazOptions extends Options
+class BazOptions implements Options
 {
     public function __construct(
 
