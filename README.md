@@ -32,9 +32,8 @@ That is:
 
 > Note:
 >
-> This documentation follows the
-> [pds/skeleton][]
-> standard for directory and file names.
+> This documentation follows the [pds/skeleton][] standard for directory and
+> file names.
 
   [pds/skeleton]: https://github.com/php-pds/skeleton
 
@@ -48,7 +47,9 @@ composer require pmjones/auto-shell
 
 ### Console Script
 
-You will need a console script to run your commands. To create a console script, open a file in your project at `bin/console.php` and add the following code:
+You will need a console script to run your commands. To create a console
+script, open a file in your project at `bin/console.php` and add the
+following code:
 
 ```php
 use AutoShell\Console;
@@ -65,7 +66,9 @@ $code = $console($_SERVER['argv']);
 exit($code);
 ```
 
-You will need to specify the `namespace` for your command classes, and the `directory` where those class files are saved. You can also specify `help` text to be shown at the top of all help output, but doing so is optional.
+You will need to specify the `namespace` for your command classes, and the
+`directory` where those class files are saved. You can also specify `help`
+text to be shown at the top of all help output, but doing so is optional.
 
 Now you can issue `php bin/console.php` and see some output:
 
@@ -84,6 +87,7 @@ This output is to be expected, since there are no commands yet.
 Open a file at `src/Project/Cli/Command/Hello.php` and add the following code:
 
 ```php
+<?php
 namespace Project\Cli\Command;
 
 class Hello
@@ -118,6 +122,7 @@ First, open a file at `src/Project/Cli/Command/HelloOptions` and add the
 following code:
 
 ```php
+<?php
 namespace Project\Cli\Command\HelloOptions;
 
 use AutoShell\Option;
@@ -128,7 +133,7 @@ class HelloOptions implements Options
     public function __construct(
 
         #[Option('u,upper')]
-        public readonly ?bool $useUpperCase;
+        public readonly ?bool $useUpperCase
 
     ) {
     }
@@ -139,6 +144,7 @@ Then in the command, add a typehinted main method parameter for the options,
 along with some logic for the option behavior:
 
 ```php
+<?php
 namespace Project\Cli\Command;
 
 class Hello
@@ -174,6 +180,7 @@ attributes.
 Edit the command to add `#[Help]` attributes ...
 
 ```php
+<?php
 namespace Project\Cli\Command;
 
 #[Help("Says hello to a _name_ of your choice.")]
@@ -199,6 +206,7 @@ class Hello
 Likewise, edit the options to add `help` attribute parameters:
 
 ```php
+<?php
 namespace Project\Cli\Command\HelloOptions;
 
 use AutoShell\Option;
@@ -209,7 +217,7 @@ class HelloOptions implements Options
     public function __construct(
 
         #[Option('u,upper', help: "Output the _name_ in upper case.")]
-        public readonly ?bool $useUpperCase;
+        public readonly ?bool $useUpperCase
 
     ) {
     }
@@ -248,48 +256,44 @@ OPTIONS
         Output the _name_ in upper case.
 ```
 
-
 ## Advanced Topics
 
-### Command Naming and Discovery
+### Command Naming and Design
 
 Command class files are presumed to be named according to PSR-4 standards;
 further:
 
-1. Each colon-separated portion of the command name maps to a subnamespace;
+- Dash-separated words are converted to CamelCase
 
-2. Dash-separated words are converted to CamelCase;
+- Colons indicate a namespace separator
 
-3. The command class file itself has a "main" method (usually `__invoke()`) with
-   an _Options_ parameter along with any other command-line argument parameters.
-
-Given a base namespace of `Project\Cli\Command`, the command name
+For example, given a base namespace of `Project\Cli\Command`, the command name
 `create-article` maps to the class `Project\Cli\Command\CreateArticle`.
 
 Likewise, the command name `schema:dump` maps to the class
 `Project\Cli\Command\Schema\Dump`.
 
-If the command class has defined _Options_ and parameters, the option and
-argument values will be collected from the command line invocation.
-
 The _Shell_ will parse the command name to find the correct class, then
-reflect on that class to find the available options and arguments, and parse
-those out as well. (The _Shell_ ignores interfaces, traits, absrtact classes,
-and _Options_ classes.)
+reflect on the "main" method in that class (typically `__invoke()`) to find
+the available options and arguments, and parse those out as well.
+(The _Shell_ ignores interfaces, traits, abstract classes, and _Options_
+implementations.)
 
-Note that the _Shell_ **does not** presume any particular return type from the
-Command classes. Typically this is an `int` representing an exit code, but that
-is not required per se by the _Shell_; it *will* be important to the _Console_
-you use, whether the one provided by _AutoShell_ or one of your own.
-
-You are not limited to using the provided _Console_ implementation. Examine the
-provided implementation for an example of how to write your own.
+Finally, your main method signature should indicate an `int` return for
+the _Console_ exit code. Retuning `0` indicates success, whereas any other
+integer value indicates failure or error. See
+<http://www.unix.com/man-page/freebsd/3/sysexits/> for common exit codes.
 
 ### Command Factory
 
-By default, the _Console_ will just create command classes using `new`.
-To inject a command factory of your own, perhaps one based on psr/container,
-pass a `$factory` callable to the _Console_:
+By default, the _Console_ will just create command classes using `new`. This
+is fine for getting started, but you will likely need some form of dependency
+injection for your command classes. You can achieve this by setting a command
+factory on the _Console_.
+
+To set a factory for creating command objects based on their class name,
+perhaps one based on [psr/container][], pass a `$factory` callable to
+the _Console_:
 
 ```php
 /** @var Psr\Container\ContainerInterface $container */
@@ -304,10 +308,14 @@ $console = Console::new(
 The _Console_ will not use the injected factory for HelpCommand classes; it
 will create those itself.
 
+  [psr/container]: https://packagist.org/packages/psr/container
+
 ### Argument Types
 
 _AutoShell_ recognizes main method parameter typehints of `int`, `float`,
- `string`, `bool`, `mixed`, and `array`.
+`string`, `bool`, `mixed`, and `array`, and will automatically cast
+values collected from the command-line invocation to their respective
+types.
 
 For `bool`, _AutoShell_ will case-insensitively cast these argument values
 to `true`: `1, t, true, y, yes`. Similarly, it will case-insensitively cast
@@ -323,19 +331,21 @@ Finally, trailing variadic parameters are also honored by _AutoShell_.
 
 You can define long and short options for your command by adding an
 `#[Option]` attribute to a constructor-promoted property in a class
-that implements _Options_ marker interface.
+that implements the _Options_ marker interface.
 
-The property name can be anything you like, but must be nullable.
+The property name can be anything you like, but **must be nullable**.
 (_AutoShell_ indicates an option was not passed at the command line by
 setting it to `null`).
 
-The property should be defined as `readonly`, and should not have a default
-value.
+As a matter of good practice, the property should be defined as `readonly`,
+and should not have a default value, but these are not strictly necessary.
 
-The first `#[Option]` parameter, a comma-separated list of short and long
-names for the option, is the only one required:
+The first parameter for each `#[Option]` is a comma-separated list
+of short and long names for the option, and is required:
 
 ```php
+namespace Project\Cli\Command;
+
 class FooOptions
 {
     public function __construct(
@@ -348,7 +358,7 @@ class FooOptions
 }
 ```
 
-There are several optional named parameters for the `#[Option]` attribute:
+There are several optional named parameters for each `#[Option]` attribute:
 
 - `argument`: (string) Must be one of `Option::VALUE_REJECTED`,
   `VALUE_REQUIRED`, or `VALUE_OPTIONAL`. Default is `VALUE_REJECTED`.
@@ -376,6 +386,8 @@ Inside your command, you can address the option via an _Options_ parameter
 on the main method:
 
 ```php
+namespace Project\Cli\Command;
+
 class Foo
 {
     public function __invoke(FooOptions $options) : int
@@ -395,6 +407,8 @@ You can add extra, long-form text to the command-level _Help_ as a second
 parameter. A very light markup of `*bold*` and `_underline_` is supported.
 
 ```php
+namespace Project\Cli\Command;
+
 #[Help(
     'This command does something.',
     <<<HELP
@@ -440,23 +454,25 @@ Please note that these callables are used **only by the _Console_ itself.**
 
 ### Command Input/Output
 
-TBD.
+_AutoShell_ does not require or provide any I/O mechanisms of its own. This
+means your command classes can use any I/O system you like; it is completely
+under your own control.
 
-> Notes:
->
-> Your command classes can use any output mechanism you like; they are
-> completely under your own control. Your command factory can inject
-> any I/O dependencies needed.
->
-> echo: going to be hard(er) to test
-> stdlog: ok
-> climate
-> symfony io? looks tough to extract from symfony/console
->
-> Keep IO separate from business logic. See next section.
->
-> Also: return codes.
+When getting started, you may wish to just use `echo`, `printf()`, and the
+like. However, that will soon become troublesome, especially when you want to
+begin automated testing. You will need to buffer all command output, capture
+it, and then read it to assert output correctness.
 
-### Application Layer
+As a lightweight alternative, you can pass a `psr/log` implmentation that
+writes to STDOUT and STDERR resource handles, such as [pmjones/stdlog][].
+Then in testing, you can instantiate the implementation with
+`php://memory` resource handles, and `fread()` the command output from
+memory.
 
-TBD.
+  [pmjones/Stdlog]: ???
+  [psr/log]: https://packagist.org/packages/psr/log
+
+Finally, you may wish to inject a more powerful standalone CLI input/output
+system. I am told [CLIMate][] is nice, but have not used it.
+
+  [CLImate]: https://climate.thephpleague.com/
