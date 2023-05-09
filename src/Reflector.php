@@ -156,8 +156,10 @@ class Reflector
 
         foreach ($rm->getParameters() as $position => $rp) {
             if ($this->isOptionsParameter($rp)) {
+                /** @var class-string */
                 $optionsClass = (string) $rp->getType();
                 $optionsPosition = $position;
+                $optionAttributes = $this->getOptionAttributes($optionsClass);
             }
             $argumentParameters[] = $rp;
         }

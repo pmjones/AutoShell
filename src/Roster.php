@@ -59,6 +59,10 @@ class Roster
     {
         $subclasses = [];
 
+        if (! is_dir($directory)) {
+            return [];
+        }
+
         $files = new RegexIterator(
             new RecursiveIteratorIterator(
                  new RecursiveDirectoryIterator(

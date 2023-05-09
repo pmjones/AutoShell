@@ -13,7 +13,7 @@ class Shell
         string $directory,
         string $method = '__invoke',
         string $suffix = '',
-        string|Stringable $header = '',
+        string|Stringable $help = '',
     ) : Shell
     {
         return new Shell(
@@ -22,7 +22,7 @@ class Shell
                 directory: $directory,
                 method: $method,
                 suffix: $suffix,
-                header: $header,
+                help: $help,
             )
         );
     }

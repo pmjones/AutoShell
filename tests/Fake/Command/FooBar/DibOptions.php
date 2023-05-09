@@ -8,21 +8,26 @@ use AutoShell\Options;
 
 class DibOptions extends Options
 {
-    #[Option(
-        'a,alpha',
-        help: "The alpha option."
-    )]
-    public ?bool $alpha;
+    public function __construct(
 
-    #[Option('b,bravo',
-        argument: Option::VALUE_REQUIRED,
-        argname: 'bval'
-    )]
-    public ?string $bravo;
+        #[Option(
+            'a,alpha',
+            help: "The alpha option."
+        )]
+        public readonly ?bool $alpha,
 
-    #[Option('c,charlie',
-        argument: Option::VALUE_OPTIONAL,
-        default: 'delta',
-    )]
-    public ?string $charlie;
+        #[Option('b,bravo',
+            argument: Option::VALUE_REQUIRED,
+            argname: 'bval'
+        )]
+        public readonly ?string $bravo,
+
+        #[Option('c,charlie',
+            argument: Option::VALUE_OPTIONAL,
+            default: 'delta',
+        )]
+        public readonly ?string $charlie,
+
+    ) {
+    }
 }

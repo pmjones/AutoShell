@@ -16,7 +16,7 @@ class Config
         string $directory,
         public readonly string $method = '__invoke',
         public readonly string $suffix = '',
-        public readonly string|Stringable $header = '',
+        public readonly string|Stringable $help = '',
     ) {
         $this->namespace = rtrim($namespace, '\\') . '\\';
         $this->directory = rtrim($directory, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;

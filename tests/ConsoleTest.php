@@ -20,7 +20,7 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
             directory: __DIR__ . '/Fake/Command',
             stdout: fn (string $output) => $this->stdout .= $output,
             stderr: fn (string $output) => $this->stderr .= $output,
-            header: "AutoShell fake test command." . PHP_EOL . PHP_EOL,
+            help: "AutoShell fake test command." . PHP_EOL . PHP_EOL,
         );
 
         $this->format = new Format();

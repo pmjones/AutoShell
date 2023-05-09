@@ -16,14 +16,9 @@ class ManualCommand extends HelpCommand
         string $method
     ) : int
     {
+        $output = (string) $this->config->help;
         $manual = new Manual();
-        $output = $manual($commandName, $class, $method);
-        $header = (string) $this->config->header;
-
-        if ($header !== '') {
-            ($this->stdout)($header);
-        }
-
+        $output .= $manual($commandName, $class, $method);
         ($this->stdout)($output);
         return 0;
     }

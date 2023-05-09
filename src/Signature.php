@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace AutoShell;
 
 use ReflectionParameter;
+use ReflectionClass;
 
 class Signature
 {
@@ -48,15 +49,27 @@ class Signature
 
         foreach ($this->argumentParameters as $position => $argumentParameter) {
             if ($position === $this->optionsPosition) {
-                $optionsClass = $this->optionsClass;
-                $options = new $optionsClass($this->optionAttributes);
-                $arguments[] = $options;
+                $arguments[] = $this->newOptions();
             } else {
                 $this->getArgument($argumentParameter, $arguments);
             }
         }
 
         return $arguments;
+    }
+
+    protected function newOptions() : Options
+    {
+        $values = [];
+
+        foreach ($this->optionAttributes as $name => $option) {
+            $values[$name] = $option->getValue();
+        }
+
+        $optionsClass = $this->optionsClass;
+
+        /** @var Options */
+        return new $optionsClass(...$values);
     }
 
     /**

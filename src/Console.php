@@ -21,7 +21,7 @@ class Console
         mixed $factory = null,
         mixed $stdout = null,
         mixed $stderr = null,
-        string|Stringable $header = '',
+        string|Stringable $help = '',
     ) : Console
     {
         $shell = Shell::new(
@@ -29,7 +29,7 @@ class Console
             directory: $directory,
             method: $method,
             suffix: $suffix,
-            header: $header,
+            help: $help,
         );
 
         return new Console(
