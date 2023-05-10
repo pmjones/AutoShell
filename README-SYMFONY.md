@@ -5,16 +5,14 @@ does *not* do.
 
 ## Pro
 
-- Does not require you to register commands via an _Application_
-
 - Automatically discovers command classes by matching the command line
   input to a namespace hierarchy
+
+- Does not require you to register commands via an _Application_
 
 - Does not require you to extend a _Command_ class
 
 - Arguments are defined as parameters on the command `__invoke()` method
-
-- Options are defined via attributes on the command class
 
 - All help is defined via attributes
 
@@ -28,7 +26,10 @@ does *not* do.
 
 ## ???
 
-- Help looks like a `man`page (black and white, bold, underline, dim)
+- Help looks like a `man` page (black and white, bold, underline, dim)
+
+- Options are defined as properties with attributes in a class separate from
+  the command
 
 - Does not come with I/O classes; use your own in your own commands, whether a
-  logger, echo, or a complex Input/Output system like the one in Symfony
+  echo/printf, a logger, or a complex I/O system like CLImate

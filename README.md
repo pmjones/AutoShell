@@ -450,16 +450,17 @@ $console = Console::new(
 );
 ```
 
-Please note that these callables are used **only by the _Console_ itself.**
+Please note that these callables are used **only by the _Console_ itself**
+-- and even then, only for help and error output.
 
 ### Command Input/Output
 
-_AutoShell_ does not require or provide any I/O mechanisms of its own. This
-means your command classes can use any I/O system you like; it is completely
-under your own control.
+_AutoShell_ does not require or provide any command I/O mechanisms. This means
+your command classes can use any I/O system you like; it is completely under
+your own control.
 
 When getting started, you may wish to just use `echo`, `printf()`, and the
-like. However, that will soon become troublesome, especially when you want to
+like. However, that will may become troublesome, especially when you want to
 begin automated testing. You will need to buffer all command output, capture
 it, and then read it to assert output correctness.
 
@@ -469,10 +470,9 @@ Then in testing, you can instantiate the implementation with
 `php://memory` resource handles, and `fread()` the command output from
 memory.
 
-  [pmjones/Stdlog]: ???
-  [psr/log]: https://packagist.org/packages/psr/log
-
 Finally, you may wish to inject a more powerful standalone CLI input/output
-system. I am told [CLIMate][] is nice, but have not used it.
+system. I am told [league/climate][] is nice, but have not used it.
 
-  [CLImate]: https://climate.thephpleague.com/
+  [psr/log]: https://packagist.org/packages/psr/log
+  [pmjones/stdlog]: https://github.com/pmjones/stdlog
+  [league/climate]: https://climate.thephpleague.com/
