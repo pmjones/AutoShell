@@ -393,14 +393,14 @@ There are several optional named parameters for each `#[Option]` attribute:
     - If `VALUE_OPTIONAL`, a value may be specified; if the option is
       specified without a value, it will use the default value (see below).
 
+- `default`: (mixed) The value for when the option is specified, but no value
+  is given. Default is `true`.
+
 - `multiple`: (bool) `true` if the option may be specified multiple times.
   Default is `false`. When `true`, the values will be passed as an array,
   even if the option is specified only once. **Special note:** if the `mode`
   is `VALUE_REJECTED` and the property type is `int`, the value will be an
   integer count of how many times the option was specified.
-
-- `default`: (mixed) The value for when the option is specified, but no value
-  is given. Default is `true`.
 
 - `help`: (string) A short line of help text about this option for the manual
   page.

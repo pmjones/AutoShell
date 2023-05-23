@@ -24,8 +24,8 @@ class Option
     public function __construct(
         string $names,
         public readonly string $mode = self::VALUE_REJECTED,
-        public readonly bool $multiple = false,
         public readonly mixed $default = null,
+        public readonly bool $multiple = false,
         public readonly ?string $help = null,
         public readonly ?string $type = null,
         public readonly string $valname = '',
