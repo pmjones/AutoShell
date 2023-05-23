@@ -106,15 +106,15 @@ class Manual
     {
         $out = [];
 
-        $optionAttributes = $signature->getOptionAttributes();
+        $optionCollection = $signature->getOptionCollection();
 
-        if (count($optionAttributes) === 0) {
+        if (count($optionCollection) === 0) {
             return '';
         }
 
         $out[] = $this->format->bold("OPTIONS");
 
-        foreach ($optionAttributes as $option) {
+        foreach ($optionCollection as $option) {
 
             $default = '';
 

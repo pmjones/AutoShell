@@ -6,13 +6,13 @@ namespace AutoShell;
 class OptionParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @param Option[] $optionAttributes
+     * @param Option[] $optionCollection
      * @param array<int, string> $input
      * @return mixed[]
      */
-    protected function parse(array $optionAttributes, array $input) : array
+    protected function parse(array $optionCollection, array $input) : array
     {
-        $optionParser = new OptionParser($optionAttributes);
+        $optionParser = new OptionParser($optionCollection);
         return $optionParser($input);
     }
 

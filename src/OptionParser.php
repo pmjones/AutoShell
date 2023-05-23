@@ -19,14 +19,14 @@ class OptionParser
     protected array $optionsByName = [];
 
     /**
-     * @param array<int, Option> $optionAttributes
+     * @param array<int, Option> $optionCollection
      */
     public function __construct(
-        protected array $optionAttributes,
+        protected array $optionCollection,
         protected Reflector $reflector = new Reflector(),
         protected Filter $filter = new Filter(),
     ) {
-        foreach ($this->optionAttributes as $option) {
+        foreach ($this->optionCollection as $option) {
             foreach ($option->names as $name) {
                 if (isset($this->optionsByName[$name])) {
                     throw new Exception\OptionAlreadyDefined("Option '{$name}' is already defined.");

@@ -39,7 +39,7 @@ class Roster
             }
 
             $rc = $this->reflector->getClass($class);
-            $help = $this->reflector->getHelpAttribute($rc);
+            $help = $this->reflector->getHelp($rc);
             $helpLine = '';
 
             if ($help !== null) {

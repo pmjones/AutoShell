@@ -26,12 +26,12 @@ class Signature
     /**
      * @var array<int, Option>
      */
-    protected array $optionAttributes = [];
+    protected array $optionCollection = [];
 
     /**
      * @var array<string, array<string, Option>>
      */
-    protected array $optionAttributesByClass = [];
+    protected array $optionCollectionByClass = [];
 
     /**
      * @param class-string $commandClass
@@ -46,12 +46,12 @@ class Signature
     ) {
         foreach ($this->methodParameters as $methodParameter) {
             if ($this->reflector->isOptionsParameter($methodParameter)) {
-                $this->addOptionAttributes($methodParameter);
+                $this->addOptionCollection($methodParameter);
             }
         }
 
         usort(
-            $this->optionAttributes,
+            $this->optionCollection,
             fn (Option $a, Option $b) => $a->names <=> $b->names
         );
 
@@ -64,14 +64,14 @@ class Signature
 
     public function getCommandHelp() : ?Help
     {
-        return $this->reflector->getHelpAttribute(
+        return $this->reflector->getHelp(
             $this->reflector->getClass($this->commandClass)
         );
     }
 
     public function getArgumentHelp(int $argumentNumber) : ?Help
     {
-        return $this->reflector->getHelpAttribute(
+        return $this->reflector->getHelp(
             $this->argumentParameters[$argumentNumber]
         );
     }
@@ -84,26 +84,26 @@ class Signature
         return $this->argumentParameters;
     }
 
-    protected function addOptionAttributes(
+    protected function addOptionCollection(
         ReflectionParameter $optionsParameter
     ) : void
     {
         /** @var class-string */
         $optionsClass = $this->reflector->getParameterType($optionsParameter);
-        $optionAttributes = $this->reflector->getOptionAttributes($optionsClass);
-        $this->optionAttributesByClass[$optionsClass] = $optionAttributes;
-        $this->optionAttributes = array_merge(
-            $this->optionAttributes,
-            array_values($optionAttributes)
+        $optionCollection = $this->reflector->getOptionCollection($optionsClass);
+        $this->optionCollectionByClass[$optionsClass] = $optionCollection;
+        $this->optionCollection = array_merge(
+            $this->optionCollection,
+            array_values($optionCollection)
         );
     }
 
     /**
      * @return array<int, Option>
      */
-    public function getOptionAttributes() : array
+    public function getOptionCollection() : array
     {
-        return $this->optionAttributes;
+        return $this->optionCollection;
     }
 
     /**
@@ -113,7 +113,7 @@ class Signature
     public function parse(array $argv) : array
     {
         $optionParser = new OptionParser(
-            $this->optionAttributes,
+            $this->optionCollection,
             $this->reflector,
             $this->filter
         );
@@ -140,10 +140,10 @@ class Signature
     ) : void
     {
         $optionsClass = $this->reflector->getParameterType($optionsParameter);
-        $optionAttributes = $this->optionAttributesByClass[$optionsClass];
+        $optionCollection = $this->optionCollectionByClass[$optionsClass];
         $values = [];
 
-        foreach ($optionAttributes as $name => $option) {
+        foreach ($optionCollection as $name => $option) {
             $values[$name] = $option->getValue();
         }
 

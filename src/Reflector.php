@@ -41,9 +41,9 @@ class Reflector
      * @param class-string $optionsClass
      * @return array<string, Option>
      */
-    public function getOptionAttributes(string $optionsClass) : array
+    public function getOptionCollection(string $optionsClass) : array
     {
-        $optionAttributes = [];
+        $optionCollection = [];
         $properties = $this->getClass($optionsClass)->getProperties();
 
         foreach ($properties as $property) {
@@ -52,15 +52,15 @@ class Reflector
                     /** @var Option */
                     $option = $attribute->newInstance();
                     $option->setType((string) $property->getType());
-                    $optionAttributes[$property->getName()] = $option;
+                    $optionCollection[$property->getName()] = $option;
                 }
             }
         }
 
-        return $optionAttributes;
+        return $optionCollection;
     }
 
-    public function getHelpAttribute(
+    public function getHelp(
         ReflectionClass|ReflectionMethod|ReflectionParameter $spec
     ) : ?Help
     {
