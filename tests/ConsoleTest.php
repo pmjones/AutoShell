@@ -50,7 +50,7 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
 
     public function testHelpRoster() : void
     {
-        $exit = ($this->console)(['run.php', 'help']);
+        $exit = ($this->console)(['console.php', 'help']);
         $this->assertSame(0, $exit);
         $expect = <<<TEXT
 AutoShell fake test command.
@@ -75,7 +75,7 @@ TEXT;
 
     public function testHelpManual() : void
     {
-        $exit = ($this->console)(['run.php', 'help', 'foo-bar:qux']);
+        $exit = ($this->console)(['console.php', 'help', 'foo-bar:qux']);
         $this->assertSame(0, $exit);
         $expect = <<<TEXT
 AutoShell fake test command.
@@ -94,7 +94,7 @@ TEXT;
 
     public function testSuccess() : void
     {
-        $exit = ($this->console)(['run.php', 'foo-bar:qux']);
+        $exit = ($this->console)(['console.php', 'foo-bar:qux']);
         // $this->assertSame(0, $exit);
         $this->assertStdout('');
         $this->assertStderr('');
@@ -102,7 +102,7 @@ TEXT;
 
     public function testFailure() : void
     {
-        $exit = ($this->console)(['run.php', 'foo-bar:qux', '--no-such-option']);
+        $exit = ($this->console)(['console.php', 'foo-bar:qux', '--no-such-option']);
         $this->assertSame(1, $exit);
         $this->assertStdout('');
         $this->assertStderr('Option --no-such-option is not defined.' . PHP_EOL);
@@ -117,7 +117,7 @@ TEXT;
             stderr: fn (string $output) => $this->stderr .= $output,
         );
 
-        $exit = ($this->console)(['run.php', 'help']);
+        $exit = ($this->console)(['console.php', 'help']);
         $this->assertSame(0, $exit);
         $expect = <<<TEXT
 No commands found.
