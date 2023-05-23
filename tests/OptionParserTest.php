@@ -5,6 +5,16 @@ namespace AutoShell;
 
 class OptionParserTest extends \PHPUnit\Framework\TestCase
 {
+    protected Reflector $reflector;
+
+    protected Filter $filter;
+
+    protected function setUp() : void
+    {
+        $this->reflector = new Reflector();
+        $this->filter = new Filter();
+    }
+
     /**
      * @param Option[] $optionCollection
      * @param array<int, string> $input
@@ -12,7 +22,7 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
      */
     protected function parse(array $optionCollection, array $input) : array
     {
-        $optionParser = new OptionParser($optionCollection);
+        $optionParser = new OptionParser($optionCollection, $this->reflector, $this->filter);
         return $optionParser($input);
     }
 

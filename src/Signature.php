@@ -41,8 +41,8 @@ class Signature
         public readonly string $commandClass,
         public readonly string $commandMethod,
         public readonly array $methodParameters,
-        protected Reflector $reflector = new Reflector(),
-        protected Filter $filter = new Filter(),
+        protected Reflector $reflector,
+        protected Filter $filter,
     ) {
         foreach ($this->methodParameters as $methodParameter) {
             if ($this->reflector->isOptionsParameter($methodParameter)) {

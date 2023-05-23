@@ -11,7 +11,7 @@ class RosterCommand extends HelpCommand
     {
         $output = (string) $this->config->help;
 
-        $roster = new Roster($this->config);
+        $roster = new Roster($this->config, $this->reflector, $this->format);
         $commands = $roster();
 
         foreach ($commands as $name => $info) {

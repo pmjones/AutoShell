@@ -12,7 +12,7 @@ class ManualTest extends \PHPUnit\Framework\TestCase
     protected function setUp() : void
     {
         $this->format = new Format();
-        $this->manual = new Manual();
+        $this->manual = new Manual(new Reflector(), $this->format);
     }
 
     public function testBasic() : void

@@ -106,6 +106,7 @@ class Reflector
             $method,
             $rm->getParameters(),
             $this,
+            new Filter(),
         );
     }
 }

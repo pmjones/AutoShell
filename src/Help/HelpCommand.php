@@ -5,6 +5,7 @@ namespace AutoShell\Help;
 
 use AutoShell\Config;
 use AutoShell\Format;
+use AutoShell\Reflector;
 
 abstract class HelpCommand
 {
@@ -13,6 +14,7 @@ abstract class HelpCommand
      */
     public function __construct(
         protected Config $config,
+        protected Reflector $reflector,
         protected Format $format,
         protected mixed $stdout,
     ) {

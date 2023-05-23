@@ -23,8 +23,8 @@ class OptionParser
      */
     public function __construct(
         protected array $optionCollection,
-        protected Reflector $reflector = new Reflector(),
-        protected Filter $filter = new Filter(),
+        protected Reflector $reflector,
+        protected Filter $filter,
     ) {
         foreach ($this->optionCollection as $option) {
             foreach ($option->names as $name) {

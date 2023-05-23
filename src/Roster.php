@@ -12,8 +12,8 @@ class Roster
 {
     public function __construct(
         protected Config $config,
-        protected Reflector $reflector = new Reflector(),
-        protected Format $format = new Format(),
+        protected Reflector $reflector,
+        protected Format $format,
     ) {
     }
 

@@ -9,8 +9,8 @@ use ReflectionMethod;
 class Manual
 {
     public function __construct(
-        protected Reflector $reflector = new Reflector(),
-        protected Format $format = new Format()
+        protected Reflector $reflector,
+        protected Format $format,
     ) {
     }
 

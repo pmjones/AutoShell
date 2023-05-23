@@ -18,9 +18,9 @@ class RosterTest extends \PHPUnit\Framework\TestCase
             directory: __DIR__ . '/Fake/Command',
         );
 
-        $this->roster = new Roster($this->config);
-
         $this->format = new Format();
+
+        $this->roster = new Roster($this->config, new Reflector(), $this->format);
     }
 
     public function test() : void

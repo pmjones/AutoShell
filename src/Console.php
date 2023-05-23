@@ -89,6 +89,7 @@ class Console
         if (is_subclass_of($class, Help\HelpCommand::class)) {
             return new $class(
                 config: $this->shell->config,
+                reflector: $this->shell->reflector,
                 format: new Format(),
                 stdout: $this->stdout
             );

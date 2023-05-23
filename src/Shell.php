@@ -23,13 +23,14 @@ class Shell
                 method: $method,
                 suffix: $suffix,
                 help: $help,
-            )
+            ),
+            new Reflector(),
         );
     }
 
     public function __construct(
         public readonly Config $config,
-        protected Reflector $reflector = new Reflector()
+        public readonly Reflector $reflector,
     ) {
     }
 
