@@ -213,6 +213,14 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
         $arguments = $this->parse($options, $input);
         $expect = ['foo' => 'baz'];
         $this->assertOptionValues($expect, $options);
+
+        $options = [
+            'foo' => new Option('f', mode: Option::VALUE_OPTIONAL, default: 'zim')
+        ];
+        $input = ['-f'];
+        $arguments = $this->parse($options, $input);
+        $expect = ['foo' => 'zim'];
+        $this->assertOptionValues($expect, $options);
     }
 
     public function testShortMultiple() : void

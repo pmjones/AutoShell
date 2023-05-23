@@ -37,15 +37,7 @@ class Option
         }
 
         sort($names);
-
         $this->names = $names;
-
-        if (
-            $this->default !== null
-            && $this->mode !== static::VALUE_OPTIONAL
-        ) {
-            throw new Exception\DefaultNotAllowed();
-        }
     }
 
     public function getValue() : mixed
@@ -59,7 +51,7 @@ class Option
     public function capture(array &$input, Filter $filter) : void
     {
         if ($this->mode === Option::VALUE_REJECTED) {
-            $this->setValue(true, $filter);
+            $this->setValue($this->default ?? true, $filter);
             return;
         }
 
@@ -72,8 +64,8 @@ class Option
             return;
         }
 
-        if ($this->mode !== Option::VALUE_REQUIRED) {
-            $this->setValue(true, $filter);
+        if ($this->mode === Option::VALUE_OPTIONAL) {
+            $this->setValue($this->default ?? true, $filter);
             return;
         }
 
@@ -102,18 +94,18 @@ class Option
             return;
         }
 
-        if ($this->mode === self::VALUE_REQUIRED) {
-            $this->equalsRequired($value, $filter);
+        if ($this->mode === self::VALUE_OPTIONAL) {
+            $this->equalsOptional($value, $filter);
+            return;
         }
 
-        $value === '' ? true : $value;
-        $this->setValue($value, $filter);
+        $this->equalsRequired($value, $filter);
     }
 
     protected function equalsRejected(string $value, Filter $filter) : void
     {
         if ($value === '') {
-            $this->setValue(true, $filter);
+            $this->setValue($this->default ?? true, $filter);
             return;
         }
 
@@ -132,6 +124,13 @@ class Option
         throw new Exception\ArgumentRequired(
             "{$this->names()} requires a value."
         );
+    }
+
+    protected function equalsOptional(string $value, Filter $filter) : void
+    {
+        $default = $this->default ?? true;
+        $value === '' ? $default : $value;
+        $this->setValue($value, $filter);
     }
 
     protected function setValue(mixed $value, Filter $filter) : void

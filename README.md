@@ -1,7 +1,3 @@
-# TODO
-
-Need to honor the $default value when mode is VALUE_OPTIONAL.
-
 # AutoShell
 
 _AutoShell_ automatically maps CLI command names to PHP command classes in a
@@ -391,7 +387,8 @@ There are several optional named parameters for each `#[Option]` attribute:
 - `mode`: (string) Must be one of `Option::VALUE_REJECTED`,
   `VALUE_REQUIRED`, or `VALUE_OPTIONAL`. Default is `VALUE_REJECTED`.
 
-    - If `VALUE_REJECTED`, no value is allowed for the option.
+    - If `VALUE_REJECTED`, no user-specified value is allowed; the value is
+      always the default value (see below).
     - If `VALUE_REQUIRED`, a value *must* be specified.
     - If `VALUE_OPTIONAL`, a value may be specified; if the option is
       specified without a value, it will use the default value (see below).
@@ -403,8 +400,7 @@ There are several optional named parameters for each `#[Option]` attribute:
   integer count of how many times the option was specified.
 
 - `default`: (mixed) The value for when the option is specified, but no value
-  is given or allowed. Default is `true`. (If an option is **not** specified,
-  its value will be `null`.)
+  is given. Default is `true`.
 
 - `help`: (string) A short line of help text about this option for the manual
   page.
