@@ -62,28 +62,6 @@ class Signature
         }
     }
 
-    public function getCommandHelp() : ?Help
-    {
-        return $this->reflector->getHelp(
-            $this->reflector->getClass($this->commandClass)
-        );
-    }
-
-    public function getArgumentHelp(int $argumentNumber) : ?Help
-    {
-        return $this->reflector->getHelp(
-            $this->argumentParameters[$argumentNumber]
-        );
-    }
-
-    /**
-     * @return array<int, ReflectionParameter>
-     */
-    public function getArgumentParameters() : array
-    {
-        return $this->argumentParameters;
-    }
-
     protected function addOptionCollection(
         ReflectionParameter $optionsParameter
     ) : void
@@ -96,14 +74,6 @@ class Signature
             $this->optionCollection,
             array_values($optionCollection)
         );
-    }
-
-    /**
-     * @return array<int, Option>
-     */
-    public function getOptionCollection() : array
-    {
-        return $this->optionCollection;
     }
 
     /**
@@ -124,8 +94,8 @@ class Signature
 
         foreach ($this->methodParameters as $methodParameter) {
             $this->reflector->isOptionsParameter($methodParameter)
-                ? $this->newOptions($methodParameter, $arguments)
-                : $this->getArgument($methodParameter, $arguments);
+                ? $this->appendOptions($methodParameter, $arguments)
+                : $this->appendArgument($methodParameter, $arguments);
         }
 
         return $arguments;
@@ -134,7 +104,7 @@ class Signature
     /**
      * @param array<int, mixed> &$arguments
      */
-    protected function newOptions(
+    protected function appendOptions(
         ReflectionParameter $optionsParameter,
         array &$arguments
     ) : void
@@ -155,7 +125,7 @@ class Signature
     /**
      * @param array<int, mixed> &$arguments
      */
-    protected function getArgument(
+    protected function appendArgument(
         ReflectionParameter $argumentParameter,
         array &$arguments
     ) : void
@@ -181,5 +151,35 @@ class Signature
             $value = array_shift($this->argv);
             $arguments[] = ($this->filter)($value, $type, $errmsg);
         }
+    }
+
+    /**
+     * @return array<int, ReflectionParameter>
+     */
+    public function getArgumentParameters() : array
+    {
+        return $this->argumentParameters;
+    }
+
+    /**
+     * @return array<int, Option>
+     */
+    public function getOptionCollection() : array
+    {
+        return $this->optionCollection;
+    }
+
+    public function getCommandHelp() : ?Help
+    {
+        return $this->reflector->getHelp(
+            $this->reflector->getClass($this->commandClass)
+        );
+    }
+
+    public function getArgumentHelp(int $argumentNumber) : ?Help
+    {
+        return $this->reflector->getHelp(
+            $this->argumentParameters[$argumentNumber]
+        );
     }
 }
