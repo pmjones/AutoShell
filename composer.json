@@ -1,6 +1,7 @@
 {
     "name": "pmjones/auto-shell",
     "description": "Automatically parses command-line strings to command classes.",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "AutoShell\\": "./src"
