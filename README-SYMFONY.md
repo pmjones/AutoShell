@@ -18,6 +18,8 @@ does *not* do.
 
 - Does not instantiate the command just to generate help output
 
+- Options are composable
+
 ## Con
 
 - Does not offer console completion
