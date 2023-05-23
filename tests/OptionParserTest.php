@@ -87,7 +87,7 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
         ];
         $input = ['--foo-bar=baz'];
         $this->expectException(Exception\ArgumentRejected::class);
-        $this->expectExceptionMessage("--foo-bar does not accept an argument.");
+        $this->expectExceptionMessage("--foo-bar does not accept a value.");
         $this->parse($options, $input);
     }
 
@@ -95,7 +95,7 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
     {
         // '=' as separator
         $options = [
-            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_REQUIRED)
+            'foo_bar' => new Option('foo-bar', mode: Option::VALUE_REQUIRED)
         ];
         $input = ['--foo-bar=baz'];
         $arguments = $this->parse($options, $input);
@@ -104,7 +104,7 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
 
         // ' ' as separator
         $options = [
-            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_REQUIRED)
+            'foo_bar' => new Option('foo-bar', mode: Option::VALUE_REQUIRED)
         ];
         $input = ['--foo-bar', 'baz'];
         $arguments = $this->parse($options, $input);
@@ -112,18 +112,18 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
 
         // missing required value
         $options = [
-            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_REQUIRED)
+            'foo_bar' => new Option('foo-bar', mode: Option::VALUE_REQUIRED)
         ];
         $input = ['--foo-bar'];
         $this->expectException(Exception\ArgumentRequired::class);
-        $this->expectExceptionMessage("--foo-bar requires an argument.");
+        $this->expectExceptionMessage("--foo-bar requires a value.");
         $this->parse($options, $input);
     }
 
     public function testLongOptional() : void
     {
         $options = [
-            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_OPTIONAL)
+            'foo_bar' => new Option('foo-bar', mode: Option::VALUE_OPTIONAL)
         ];
         $input = ['--foo-bar'];
         $arguments = $this->parse($options, $input);
@@ -131,7 +131,7 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
         $this->assertOptionValues($expect, $options);
 
         $options = [
-            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_OPTIONAL)
+            'foo_bar' => new Option('foo-bar', mode: Option::VALUE_OPTIONAL)
         ];
         $input = ['--foo-bar=baz'];
         $arguments = $this->parse($options, $input);
@@ -142,7 +142,7 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
     public function testLongMultiple() : void
     {
         $options = [
-            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_OPTIONAL, multiple: true)
+            'foo_bar' => new Option('foo-bar', mode: Option::VALUE_OPTIONAL, multiple: true)
         ];
 
         $input = [
@@ -180,7 +180,7 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
     public function testShortRequired() : void
     {
         $options = [
-            'foo' => new Option('f', argument: Option::VALUE_REQUIRED)
+            'foo' => new Option('f', mode: Option::VALUE_REQUIRED)
         ];
         $input = ['-f', 'baz'];
         $arguments = $this->parse($options, $input);
@@ -188,18 +188,18 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
         $this->assertOptionValues($expect, $options);
 
         $options = [
-            'f' => new Option('f', argument: Option::VALUE_REQUIRED)
+            'f' => new Option('f', mode: Option::VALUE_REQUIRED)
         ];
         $input = ['-f'];
         $this->expectException(Exception\ArgumentRequired::class);
-        $this->expectExceptionMessage("-f requires an argument.");
+        $this->expectExceptionMessage("-f requires a value.");
         $this->parse($options, $input);
     }
 
     public function testShortOptional() : void
     {
         $options = [
-            'foo' => new Option('f', argument: Option::VALUE_OPTIONAL)
+            'foo' => new Option('f', mode: Option::VALUE_OPTIONAL)
         ];
         $input = ['-f'];
         $arguments = $this->parse($options, $input);
@@ -207,7 +207,7 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
         $this->assertOptionValues($expect, $options);
 
         $options = [
-            'foo' => new Option('f', argument: Option::VALUE_OPTIONAL)
+            'foo' => new Option('f', mode: Option::VALUE_OPTIONAL)
         ];
         $input = ['-f', 'baz'];
         $arguments = $this->parse($options, $input);
@@ -218,7 +218,7 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
     public function testShortMultiple() : void
     {
         $options = [
-            'foo' => new Option('f', argument: Option::VALUE_OPTIONAL, multiple: true)
+            'foo' => new Option('f', mode: Option::VALUE_OPTIONAL, multiple: true)
         ];
 
         $input = ['-f', '-f', '-f', 'baz', '-f', 'dib', '-f'];
@@ -249,22 +249,22 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
     {
         $options = [
             'f' => new Option('f'),
-            'b' => new Option('b', argument: Option::VALUE_REQUIRED),
+            'b' => new Option('b', mode: Option::VALUE_REQUIRED),
             'z' => new Option('z'),
         ];
 
         $input = ['-fbz'];
         $this->expectException(Exception\ArgumentRequired::class);
-        $this->expectExceptionMessage("-b requires an argument.");
+        $this->expectExceptionMessage("-b requires a value.");
         $this->parse($options, $input);
     }
 
     public function testParseAndGet() : void
     {
         $options = [
-            'foo_bar' => new Option('foo-bar', argument: Option::VALUE_REQUIRED),
+            'foo_bar' => new Option('foo-bar', mode: Option::VALUE_REQUIRED),
             'baz' => new Option('b'),
-            'zim' => new Option('z', argument: Option::VALUE_OPTIONAL),
+            'zim' => new Option('z', mode: Option::VALUE_OPTIONAL),
         ];
 
         $input = [
@@ -307,13 +307,27 @@ class OptionParserTest extends \PHPUnit\Framework\TestCase
     public function testMultipleWithAlias() : void
     {
         $options = [
-            'foo' => new Option('-f,--foo', argument: Option::VALUE_OPTIONAL, multiple: true)
+            'foo' => new Option('-f,--foo', mode: Option::VALUE_OPTIONAL, multiple: true)
         ];
 
         $input = ['-f', '--foo', '-f', 'baz', '-f', 'dib', '--foo'];
         $arguments = $this->parse($options, $input);
         $expect = [
             'foo' => [true, true, 'baz', 'dib', true],
+        ];
+        $this->assertOptionValues($expect, $options);
+    }
+
+    public function testMultipleIntValueRejected() : void
+    {
+        $options = [
+            'foo' => new Option('-f,--foo', multiple: true, type: 'int')
+        ];
+
+        $input = ['-f', '--foo', '-f', 'baz', '-f', 'dib', '--foo'];
+        $arguments = $this->parse($options, $input);
+        $expect = [
+            'foo' => 5,
         ];
         $this->assertOptionValues($expect, $options);
     }

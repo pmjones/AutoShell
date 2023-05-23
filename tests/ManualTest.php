@@ -44,12 +44,12 @@ OPTIONS
     --alpha
         The alpha option.
 
-    -b bval
-    --bravo=bval
+    -b bravo
+    --bravo=bravo
         No help available.
 
-    -c [value] (default: 'delta')
-    --charlie[=value] (default: 'delta')
+    -c [charlie] (default: 'delta')
+    --charlie[=charlie] (default: 'delta')
         No help available.
 
 DESCRIPTION
@@ -151,12 +151,12 @@ OPTIONS
     --alpha
         The alpha option.
 
-    -b bval
-    --bravo=bval
+    -b bravo
+    --bravo=bravo
         No help available.
 
-    -c [value] (default: 'delta')
-    --charlie[=value] (default: 'delta')
+    -c [charlie] (default: 'delta')
+    --charlie[=charlie] (default: 'delta')
         No help available.
 
     -z

@@ -17,13 +17,12 @@ class DibOptions implements Options
         public readonly ?bool $alpha,
 
         #[Option('b,bravo',
-            argument: Option::VALUE_REQUIRED,
-            argname: 'bval'
+            mode: Option::VALUE_REQUIRED,
         )]
         public readonly ?string $bravo,
 
         #[Option('c,charlie',
-            argument: Option::VALUE_OPTIONAL,
+            mode: Option::VALUE_OPTIONAL,
             default: 'delta',
         )]
         public readonly ?string $charlie,

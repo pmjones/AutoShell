@@ -1,23 +1,27 @@
+# TODO
+
+Need to honor the $default value when mode is VALUE_OPTIONAL.
+
 # AutoShell
 
-_AutoShell_ automatically maps command names to PHP command classes in a specified
-namespace, reflecting on a specified main method within that class to determine
-the argument and option values. The method parameters may be scalar values
-(int, float, string, bool) or arrays.
+_AutoShell_ automatically maps CLI command names to PHP command classes in a
+ specified namespace, reflecting on a specified main method within that class
+ to determine the argument and option values. The method parameters may be
+ scalar values(int, float, string, bool) or arrays.
 
 _AutoShell_ is low-maintenance. Merely adding a class to your source code, in the
 recognized namespace and with the recognized main method name, automatically
 makes it available as a command.
 
-Think of _AutoShell_ as the "router" for your command classes:
+Think of _AutoShell_ as the "router" for your CLI command classes:
 
--  Under MVC or ADR, you would have a Front Controller pass the URL to a Router,
-   and get back a Route DTO describing which Controller/Action to invoke
+-  Under ADR or MVC, you have a Front Controller pass the URL to a Router,
+   and get back a Route object describing which Action/Controller to invoke
    (with the arguments thereto). The Front Controller would then invoke the
-   Controller/Action with those arguments.
+   Action/Controller with those arguments.
 
--  Here, you would have a Console class pass `$_SERVER['argv']` to a Shell, and
-   get back an Exec DTO describing which Command class to invoke (with the
+-  Here, you have a Console class pass `$_SERVER['argv']` to a Shell, and
+   get back an Exec object describing which Command class to invoke (with the
    options and arguments thereto). The Console would then invoke the Command
    with those options and arguments.
 
@@ -26,7 +30,7 @@ That is:
     Front Controller    => Console
     Router              => Shell
     Route               => Exec
-    Controller/Action   => Command
+    Action/Controller   => Command
 
 ## Getting Started
 
@@ -346,8 +350,8 @@ to `true`: `1, t, true, y, yes`. Similarly, it will case-insensitively cast
 these argument values to `false`: `0, f, false, n, no`.
 
 For `array`, _AutoShell_ will use `str_getcsv()` on the argument value to
-generate an array. E.g., an array typehint for a segment value of `a,b,c` will
-receive `['a', 'b', 'c']`.
+generate an array. E.g., an array typehint for an argument value of `a,b,c`
+will receive `['a', 'b', 'c']`.
 
 Finally, trailing variadic parameters are also honored by _AutoShell_.
 
@@ -384,7 +388,7 @@ class FooOptions
 
 There are several optional named parameters for each `#[Option]` attribute:
 
-- `argument`: (string) Must be one of `Option::VALUE_REJECTED`,
+- `mode`: (string) Must be one of `Option::VALUE_REJECTED`,
   `VALUE_REQUIRED`, or `VALUE_OPTIONAL`. Default is `VALUE_REJECTED`.
 
     - If `VALUE_REJECTED`, no value is allowed for the option.
@@ -393,18 +397,19 @@ There are several optional named parameters for each `#[Option]` attribute:
       specified without a value, it will use the default value (see below).
 
 - `multiple`: (bool) `true` if the option may be specified multiple times.
-  Default is `false`. When `true`, the argument values will be passed as an
-  array, even if the option is specified only once.
+  Default is `false`. When `true`, the values will be passed as an array,
+  even if the option is specified only once. **Special note:** if the `mode`
+  is `VALUE_REJECTED` and the property type is `int`, the value will be an
+  integer count of how many times the option was specified.
 
 - `default`: (mixed) The value for when the option is specified, but no value
-  is given or allowed. Default is `true`.
+  is given or allowed. Default is `true`. (If an option is **not** specified,
+  its value will be `null`.)
 
 - `help`: (string) A short line of help text about this option for the manual
   page.
 
-- `argname`: (string) A short name for the argument in the help text.
-
-Argument values will be cast to the property type of the `#[Option]`.
+Values will be cast to the property type of the `#[Option]`.
 
 Inside your command, you can address the option via an _Options_ parameter
 on the main method:

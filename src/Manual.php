@@ -137,14 +137,14 @@ class Manual
     {
         $short = strlen($name) === 1;
         $str = $this->format->bold(($short ? '-' : '--') . $name);
-        $argname = $this->format->ul($option->argname ?? 'value');
+        $valname = $this->format->ul($option->valname);
 
-        switch ($option->argument) {
+        switch ($option->mode) {
             case Option::VALUE_REQUIRED:
-                $str .= ($short ? ' ' : '=') . $argname;
+                $str .= ($short ? ' ' : '=') . $valname;
                 break;
             case Option::VALUE_OPTIONAL:
-                $str .= ($short ? ' [' : '[=') . "{$argname}]";
+                $str .= ($short ? ' [' : '[=') . "{$valname}]";
                 break;
         }
 

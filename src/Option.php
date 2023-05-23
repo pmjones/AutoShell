@@ -21,15 +21,14 @@ class Option
 
     protected mixed $value = null;
 
-    protected ?string $type = null;
-
     public function __construct(
         string $names,
-        public readonly string $argument = self::VALUE_REJECTED,
+        public readonly string $mode = self::VALUE_REJECTED,
         public readonly bool $multiple = false,
         public readonly mixed $default = null,
         public readonly ?string $help = null,
-        public readonly ?string $argname = null,
+        public readonly ?string $type = null,
+        public readonly string $valname = '',
     ) {
         $names = explode(',', $names);
 
@@ -43,15 +42,10 @@ class Option
 
         if (
             $this->default !== null
-            && $this->argument !== static::VALUE_OPTIONAL
+            && $this->mode !== static::VALUE_OPTIONAL
         ) {
             throw new Exception\DefaultNotAllowed();
         }
-    }
-
-    public function setType(?string $type) : void
-    {
-        $this->type = $type;
     }
 
     public function getValue() : mixed
@@ -64,7 +58,7 @@ class Option
      */
     public function capture(array &$input, Filter $filter) : void
     {
-        if ($this->argument === Option::VALUE_REJECTED) {
+        if ($this->mode === Option::VALUE_REJECTED) {
             $this->setValue(true, $filter);
             return;
         }
@@ -78,13 +72,13 @@ class Option
             return;
         }
 
-        if ($this->argument !== Option::VALUE_REQUIRED) {
+        if ($this->mode !== Option::VALUE_REQUIRED) {
             $this->setValue(true, $filter);
             return;
         }
 
         throw new Exception\ArgumentRequired(
-            "{$this->names()} requires an argument."
+            "{$this->names()} requires a value."
         );
     }
 
@@ -103,12 +97,12 @@ class Option
     {
         $value = trim($value);
 
-        if ($this->argument === self::VALUE_REJECTED) {
+        if ($this->mode === self::VALUE_REJECTED) {
             $this->equalsRejected($value, $filter);
             return;
         }
 
-        if ($this->argument === self::VALUE_REQUIRED) {
+        if ($this->mode === self::VALUE_REQUIRED) {
             $this->equalsRequired($value, $filter);
         }
 
@@ -124,7 +118,7 @@ class Option
         }
 
         throw new Exception\ArgumentRejected(
-            "{$this->names()} does not accept an argument."
+            "{$this->names()} does not accept a value."
         );
     }
 
@@ -136,12 +130,17 @@ class Option
         }
 
         throw new Exception\ArgumentRequired(
-            "{$this->names()} requires an argument."
+            "{$this->names()} requires a value."
         );
     }
 
     protected function setValue(mixed $value, Filter $filter) : void
     {
+        if ($this->mode === static::VALUE_REJECTED && $this->type === 'int') {
+            $this->value = ($this->value === null) ? 1 : $this->value + 1;
+            return;
+        }
+
         $errmsg = "Option {$this->names()} expected {$this->type} value";
         $value = $filter($value, $this->type, $errmsg);
 
