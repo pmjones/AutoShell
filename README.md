@@ -522,7 +522,7 @@ your command classes can use any I/O system you like; it is completely under
 your own control.
 
 When getting started, you may wish to just use `echo`, `printf()`, and the
-like. However, that will may become troublesome, especially when you want to
+like. However, that may become troublesome, especially when you want to
 begin automated testing. You will need to buffer all command output, capture
 it, and then read it to assert output correctness.
 
