@@ -32,8 +32,8 @@ That is:
 
 > Note:
 >
-> This documentation follows the [pds/skeleton][] standard for directory and
-> file names.
+> The documentation examples follow the [pds/skeleton][] standard for directory
+> and file names.
 
   [pds/skeleton]: https://github.com/php-pds/skeleton
 
@@ -115,10 +115,10 @@ That's all -- the command should now be available via the console script. If you
 
 To enable options on the command, create a class that implements the _Options_
 marker interface, using `#[Option]` attributes on constructor-promoted
-properties. Then add that _Options_ implementation to the `__invoke()`
+properties. Then add that _Options_ implementation to the main method
 parameters to make those options available to the command logic.
 
-First, open a file at `src/Project/Cli/Command/HelloOptions` and add the
+First, open a file at `src/Project/Cli/Command/HelloOptions.php` and add the
 following code:
 
 ```php
@@ -173,11 +173,10 @@ Now if you issue one of the following ...
 
 ### Giving Help
 
-To add help for your command, use the `#[Help]` attribute on the command
-and its arguments, as well as the `help` parameter on any `#[Option]`
-attributes.
+To add help for your command, use the `#[Help]` attribute.
 
-Edit the command to add `#[Help]` attributes ...
+Edit the command to add `#[Help]` attributes on the class and its main method
+parameters:
 
 ```php
 <?php
@@ -203,7 +202,7 @@ class Hello
 }
 ```
 
-Likewise, edit the options to add `help` attribute parameters:
+Likewise, edit each `#[Option]` attribute to add a `help` parameter:
 
 ```php
 <?php
@@ -253,12 +252,12 @@ ARGUMENTS
 OPTIONS
     -u
     --upper
-        Output the _name_ in upper case.
+        Output the name in upper case.
 ```
 
 ## Advanced Topics
 
-### Command Naming and Design
+### Command Naming
 
 Command class files are presumed to be named according to PSR-4 standards;
 further:
@@ -278,6 +277,31 @@ reflect on the "main" method in that class (typically `__invoke()`) to find
 the available options and arguments, and parse those out as well.
 (The _Shell_ ignores interfaces, traits, abstract classes, and _Options_
 implementations.)
+
+If you want to name your command classes with a suffix, specify that suffix
+when creating the _Console_ object:
+
+```php
+$console = Console::new(
+    namespace: 'Project\Cli\Command',
+    directory: dirname(__DIR__) . '/src/Cli/Command',
+    suffix: 'Command'
+);
+```
+
+### Command Method
+
+By default, _AutoShell_ reflects on `__invoke()` as the main method on command
+classes. You can change that main method when creating the _Console_. For
+example, to use `exec()` as the main method on commands:
+
+```php
+$console = Console::new(
+    namespace: 'Project\Cli\Command',
+    directory: dirname(__DIR__) . '/src/Cli/Command',
+    method: 'exec'
+);
+```
 
 Finally, your main method signature should indicate an `int` return for
 the _Console_ exit code. Retuning `0` indicates success, whereas any other
@@ -300,12 +324,12 @@ the _Console_:
 
 $console = Console::new(
     namespace: 'Project\Cli\Command',
-    directory: dirname(__DIR__) . '/src/Sapi/Cli/Command',
+    directory: dirname(__DIR__) . '/src/Cli/Command',
     factory: fn (string $class) => $container->get($class),
 );
 ```
 
-The _Console_ will not use the injected factory for HelpCommand classes; it
+The _Console_ will not use the injected factory for its own help classes; it
 will create those itself.
 
   [psr/container]: https://packagist.org/packages/psr/container
@@ -327,7 +351,7 @@ receive `['a', 'b', 'c']`.
 
 Finally, trailing variadic parameters are also honored by _AutoShell_.
 
-### Option Descriptions
+### Option Definitions
 
 You can define long and short options for your command by adding an
 `#[Option]` attribute to a constructor-promoted property in a class
@@ -401,6 +425,44 @@ class Foo
 }
 ```
 
+### Composing Options
+
+Sometimes you will want to have a common set of _Options_ used across all
+your commands, along with a set of _Options_ specific to an individual
+command. To support this, _AutoShell_ allows more than one _Options_
+parameter on the main method:
+
+```php
+namespace Project\Cli\Command;
+
+class Foo
+{
+    public function __invoke(
+        CommonOptions $commonOptions,
+        FooOptions $fooOptions
+    ) : int
+    {
+        if ($commonOptions->verbose)) {
+            // increased verbosity
+        }
+
+        if ($fooOptions->bar) {
+            // do whatever 'bar' means
+        }
+
+        return 0;
+    }
+}
+```
+
+The only caveat to this is that _Options_ specified *later* in the parameters
+may not have an option name defined in any *earlier* _Options_ parameter.
+
+Given the above example, this means you cannot define (e.g.) `-f` in **both**
+the _CommonOptions_ **and** the _FooOptions_; you must define it on only one
+of them. If you define it in more than one, _AutoShell_ will raise an
+_OptionAlreadyDefined_ exception.
+
 ### Extended Help
 
 You can add extra, long-form text to the command-level _Help_ as a second
@@ -444,7 +506,7 @@ $logger = $container->get(LoggerInterface::class);
 
 $console = Console::new(
     namespace: 'Project\Cli\Command',
-    directory: dirname(__DIR__) . '/src/Sapi/Cli/Command',
+    directory: dirname(__DIR__) . '/src/Cli/Command',
     stdout: fn (string $output) => $logger->info($output),
     stderr: fn (string $output) => $logger->critical($output),
 );
