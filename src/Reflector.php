@@ -29,34 +29,12 @@ class Reflector
     {
         $name = $rp->getName();
         $type = $rp->getType();
-        return ($type === null)
-            ? 'mixed'
-            : $type->getName(); // @phpstan-ignore-line
+        return (string) $type->getName(); // @phpstan-ignore-line
     }
 
-    public function isOptionsClass(string $class) : bool
+    protected function isOptionsClass(string $class) : bool
     {
         return is_subclass_of($class, Options::class, true);
-    }
-
-    /**
-     * @return class-string
-     */
-    public function getOptionsClass(ReflectionMethod $rm) : string
-    {
-        $optionsClass = '';
-        $parameters = $rm->getParameters();
-
-        foreach ($parameters as $parameter) {
-            $type = $this->getParameterType($parameter);
-            if ($this->isOptionsClass($type)) {
-                $optionsClass = $type;
-                break;
-            }
-        }
-
-        /** @var class-string */
-        return $optionsClass;
     }
 
     /**
@@ -65,10 +43,6 @@ class Reflector
      */
     public function getOptionAttributes(string $optionsClass) : array
     {
-        if (! $optionsClass) {
-            return [];
-        }
-
         $optionAttributes = [];
         $properties = $this->getClass($optionsClass)->getProperties();
 
@@ -84,28 +58,6 @@ class Reflector
         }
 
         return $optionAttributes;
-    }
-
-    /**
-     * @return ReflectionParameter[]
-     */
-    public function getArgumentParameters(ReflectionMethod $rm) : array
-    {
-        $argumentParameters = [];
-        $rps = $rm->getParameters();
-
-        while (! empty($rps)) {
-            $rp = array_shift($rps);
-            if ($this->isOptionsClass($this->getParameterType($rp))) {
-                break;
-            }
-        }
-
-        foreach ($rps as $rp) {
-            $argumentParameters[] = $rp;
-        }
-
-        return $argumentParameters;
     }
 
     public function getHelpAttribute(
@@ -138,7 +90,7 @@ class Reflector
 
     public function isOptionsParameter(ReflectionParameter $rp) : bool
     {
-        return $this->isOptionsclass((string) $rp->getType());
+        return $this->isOptionsClass((string) $rp->getType());
     }
 
     /**
@@ -149,26 +101,10 @@ class Reflector
         $rc = $this->getClass($class);
         $rm = $this->getMethod($rc, $method);
 
-        $optionsPosition = null;
-        $optionsClass = '';
-        $optionAttributes = [];
-        $argumentParameters = [];
-
-        foreach ($rm->getParameters() as $position => $rp) {
-            if ($this->isOptionsParameter($rp)) {
-                /** @var class-string */
-                $optionsClass = (string) $rp->getType();
-                $optionsPosition = $position;
-                $optionAttributes = $this->getOptionAttributes($optionsClass);
-            }
-            $argumentParameters[] = $rp;
-        }
-
         return new Signature(
-            $argumentParameters,
-            $optionsPosition,
-            $optionsClass,
-            $optionAttributes,
+            $class,
+            $method,
+            $rm->getParameters(),
             $this,
         );
     }

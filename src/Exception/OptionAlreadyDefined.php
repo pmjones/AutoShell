@@ -5,6 +5,6 @@ namespace AutoShell\Exception;
 
 use AutoShell\Exception;
 
-class OptionsReadonly extends Exception
+class OptionAlreadyDefined extends Exception
 {
 }

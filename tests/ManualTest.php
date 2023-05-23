@@ -124,4 +124,48 @@ TEXT;
 
         $this->assertSame($expect, $actual);
     }
+
+    public function testMultiOptions() : void
+    {
+        $actual = $this->format->strip(
+            ($this->manual)(
+                'foo-bar:gir',
+                Fake\Command\FooBar\Gir::class,
+                '__invoke'
+            )
+        );
+
+        $expect = <<<TEXT
+NAME
+    foo-bar:gir -- Command for Gir.
+
+SYNOPSIS
+    foo-bar:gir [options] [--] doom
+
+ARGUMENTS
+    doom
+         No help available.
+
+OPTIONS
+    -a
+    --alpha
+        The alpha option.
+
+    -b bval
+    --bravo=bval
+        No help available.
+
+    -c [value] (default: 'delta')
+    --charlie[=value] (default: 'delta')
+        No help available.
+
+    -z
+    --zim
+        No help available.
+
+
+TEXT;
+
+        $this->assertSame($expect, $actual);
+    }
 }

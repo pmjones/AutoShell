@@ -14,27 +14,96 @@ class Signature
     protected array $argv = [];
 
     /**
+     * @var array<int, ReflectionParameter>
+     */
+    protected array $argumentParameters = [];
+
+    /**
      * @var array<string, Option>
      */
     protected array $optionsByName = [];
 
     /**
-     * @param array <int, ReflectionParameter> $argumentParameters
-     * @param array <string, Option> $optionAttributes
+     * @var array<int, Option>
+     */
+    protected array $optionAttributes = [];
+
+    /**
+     * @var array<string, array<string, Option>>
+     */
+    protected array $optionAttributesByClass = [];
+
+    /**
+     * @param class-string $commandClass
+     * @param array <int, ReflectionParameter> $methodParameters
      */
     public function __construct(
-        protected array $argumentParameters,
-        protected ?int $optionsPosition,
-        protected string $optionsClass,
-        protected array $optionAttributes,
+        public readonly string $commandClass,
+        public readonly string $commandMethod,
+        public readonly array $methodParameters,
         protected Reflector $reflector = new Reflector(),
         protected Filter $filter = new Filter(),
     ) {
-        foreach ($this->optionAttributes as $option) {
-            foreach ($option->names as $name) {
-                $this->optionsByName[$name] = $option;
+        foreach ($this->methodParameters as $methodParameter) {
+            if ($this->reflector->isOptionsParameter($methodParameter)) {
+                $this->addOptionAttributes($methodParameter);
             }
         }
+
+        usort(
+            $this->optionAttributes,
+            fn (Option $a, Option $b) => $a->names <=> $b->names
+        );
+
+        foreach ($this->methodParameters as $methodParameter) {
+            if (! $this->reflector->isOptionsParameter($methodParameter)) {
+                $this->argumentParameters[] = $methodParameter;
+            }
+        }
+    }
+
+    public function getCommandHelp() : ?Help
+    {
+        return $this->reflector->getHelpAttribute(
+            $this->reflector->getClass($this->commandClass)
+        );
+    }
+
+    public function getArgumentHelp(int $argumentNumber) : ?Help
+    {
+        return $this->reflector->getHelpAttribute(
+            $this->argumentParameters[$argumentNumber]
+        );
+    }
+
+    /**
+     * @return array<int, ReflectionParameter>
+     */
+    public function getArgumentParameters() : array
+    {
+        return $this->argumentParameters;
+    }
+
+    protected function addOptionAttributes(
+        ReflectionParameter $optionsParameter
+    ) : void
+    {
+        /** @var class-string */
+        $optionsClass = $this->reflector->getParameterType($optionsParameter);
+        $optionAttributes = $this->reflector->getOptionAttributes($optionsClass);
+        $this->optionAttributesByClass[$optionsClass] = $optionAttributes;
+        $this->optionAttributes = array_merge(
+            $this->optionAttributes,
+            array_values($optionAttributes)
+        );
+    }
+
+    /**
+     * @return array<int, Option>
+     */
+    public function getOptionAttributes() : array
+    {
+        return $this->optionAttributes;
     }
 
     /**
@@ -43,131 +112,44 @@ class Signature
      */
     public function parse(array $argv) : array
     {
-        $this->parseOptions($argv);
+        $optionParser = new OptionParser(
+            $this->optionAttributes,
+            $this->reflector,
+            $this->filter
+        );
+
+        $this->argv = $optionParser($argv);
 
         $arguments = [];
 
-        foreach ($this->argumentParameters as $position => $argumentParameter) {
-            if ($position === $this->optionsPosition) {
-                $arguments[] = $this->newOptions();
-            } else {
-                $this->getArgument($argumentParameter, $arguments);
-            }
+        foreach ($this->methodParameters as $methodParameter) {
+            $this->reflector->isOptionsParameter($methodParameter)
+                ? $this->newOptions($methodParameter, $arguments)
+                : $this->getArgument($methodParameter, $arguments);
         }
 
         return $arguments;
     }
 
-    protected function newOptions() : Options
+    /**
+     * @param array<int, mixed> &$arguments
+     */
+    protected function newOptions(
+        ReflectionParameter $optionsParameter,
+        array &$arguments
+    ) : void
     {
+        $optionsClass = $this->reflector->getParameterType($optionsParameter);
+        $optionAttributes = $this->optionAttributesByClass[$optionsClass];
         $values = [];
 
-        foreach ($this->optionAttributes as $name => $option) {
+        foreach ($optionAttributes as $name => $option) {
             $values[$name] = $option->getValue();
         }
 
-        $optionsClass = $this->optionsClass;
-
         /** @var Options */
-        return new $optionsClass(...$values);
-    }
-
-    /**
-     * @param array<int, string> $argv
-     * @return array<int, string>
-     */
-    public function parseOptions(array $argv) : array
-    {
-        $this->argv = $argv;
-
-        // done parsing options?
-        $done = false;
-
-        // retained arguments
-        $keep = [];
-
-        // loop through the argv values to be parsed
-        while ($this->argv) {
-
-            // shift each element from the top of $this->argv
-            $curr = array_shift($this->argv);
-
-            // after a plain double-dash, all values are arguments (not options)
-            if ($curr == '--') {
-                $done = true;
-                continue;
-            }
-
-            if ($done) {
-                $keep[] = $curr;
-                continue;
-            }
-
-            // long option?
-            if (substr($curr, 0, 2) == '--') {
-                $this->longOption(ltrim($curr, '-'));
-                continue;
-            }
-
-            // short option?
-            if (substr($curr, 0, 1) == '-') {
-                $this->shortOption(ltrim($curr, '-'));
-                continue;
-            }
-
-            // retain as argument
-            $keep[] = $curr;
-        }
-
-        // reset to retained arguments
-        $this->argv = $keep;
-        return $keep;
-    }
-
-    protected function longOption(string $name) : void
-    {
-        $pos = strpos($name, '=');
-
-        if ($pos !== false) {
-            $value = substr($name, $pos + 1);
-            $name = substr($name, 0, $pos);
-            $this->getOptionByName($name)->equals($value, $this->filter);
-            return;
-        }
-
-        $this->getOptionByName($name)->capture($this->argv, $this->filter);
-    }
-
-    protected function shortOption(string $name) : void
-    {
-        if (strlen($name) == 1) {
-            $this->getOptionByName($name)->capture($this->argv, $this->filter);
-            return;
-        }
-
-        $chars = str_split($name);
-        $final = array_pop($chars);
-
-        foreach ($chars as $char) {
-            $this->getOptionByName($char)->equals('', $this->filter);
-        }
-
-        $this->getOptionByName($final)->capture($this->argv, $this->filter);
-    }
-
-    protected function getOptionByName(string $name) : Option
-    {
-        $name = ltrim($name, '-');
-
-        if (isset($this->optionsByName[$name])) {
-            return $this->optionsByName[$name];
-        }
-
-        $name = strlen($name) === 1 ? "-{$name}" : "--{$name}";
-
-        throw new Exception\OptionNotDefined(
-            "Option {$name} is not defined."
-        );
+        $options = new $optionsClass(...$values);
+        $arguments[] = $options;
     }
 
     /**

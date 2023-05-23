@@ -3,70 +3,74 @@ declare(strict_types=1);
 
 namespace AutoShell;
 
-class SignatureTest extends \PHPUnit\Framework\TestCase
+class OptionParserTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @param array<string, Option> $options
+     * @param Option[] $optionAttributes
      * @param array<int, string> $input
      * @return mixed[]
      */
-    protected function parseOptions(array $options, array $input) : array
+    protected function parse(array $optionAttributes, array $input) : array
     {
-        $signature = new Signature(
-            argumentParameters: [],
-            optionsPosition: null,
-            optionsClass: '',
-            optionAttributes: $options,
-        );
-
-        return $signature->parseOptions($input);
+        $optionParser = new OptionParser($optionAttributes);
+        return $optionParser($input);
     }
 
     /**
      * @param mixed[] $expect
      * @param array<string, Option> $options
      */
-    protected function assertSameValues(array $expect, array $options) : void
+    protected function assertOptionValues(array $expect, array $options) : void
     {
         $actual = [];
 
-        foreach ($options as $option) {
-            foreach ($option->names as $name) {
-                $actual[$name] = $option->getValue();
-            }
+        foreach ($options as $key => $option) {
+            $actual[$key] = $option->getValue();
         }
 
         $this->assertSame($expect, $actual);
     }
 
-    public function testParse_noOptions() : void
+    public function testNoOptions() : void
     {
         $options = [];
         $input = ['abc', 'def'];
-        $arguments = $this->parseOptions($options, $input);
+        $arguments = $this->parse($options, $input);
         $this->assertCount(0, $options);
         $expect = ['abc', 'def'];
         $this->assertSame($expect, $input);
     }
 
-    public function testParse_undefinedOption() : void
+    public function testUndefinedOption() : void
     {
         $options = [];
         $input = ['-z', 'def'];
         $this->expectException(Exception\OptionNotDefined::class);
         $this->expectExceptionMessage("-z is not defined.");
-        $this->parseOptions($options, $input);
+        $this->parse($options, $input);
     }
 
-    public function testParse_longRejected() : void
+    public function testOptionAlreadyDefined() : void
+    {
+        $options = [
+            'foo1' => new Option('f,foo'),
+            'foo2' => new Option('f'),
+        ];
+        $input = [];
+        $this->expectException(Exception\OptionAlreadyDefined::class);
+        $this->expectExceptionMessage("Option 'f' is already defined.");
+        $this->parse($options, $input);
+    }
+
+    public function testLongRejected() : void
     {
         $options = [
             'foo_bar' => new Option('foo-bar'),
         ];
         $input = ['--foo-bar'];
-        $arguments = $this->parseOptions($options, $input);
-        $expect = ['foo-bar' => true];
-        $this->assertSameValues($expect, $options);
+        $arguments = $this->parse($options, $input);
+        $expect = ['foo_bar' => true];
+        $this->assertOptionValues($expect, $options);
 
         $options = [
             'foo_bar' => new Option('foo-bar'),
@@ -74,27 +78,27 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
         $input = ['--foo-bar=baz'];
         $this->expectException(Exception\ArgumentRejected::class);
         $this->expectExceptionMessage("--foo-bar does not accept an argument.");
-        $this->parseOptions($options, $input);
+        $this->parse($options, $input);
     }
 
-    public function testParse_longRequired() : void
+    public function testLongRequired() : void
     {
         // '=' as separator
         $options = [
             'foo_bar' => new Option('foo-bar', argument: Option::VALUE_REQUIRED)
         ];
         $input = ['--foo-bar=baz'];
-        $arguments = $this->parseOptions($options, $input);
-        $expect = ['foo-bar' => 'baz'];
-        $this->assertSameValues($expect, $options);
+        $arguments = $this->parse($options, $input);
+        $expect = ['foo_bar' => 'baz'];
+        $this->assertOptionValues($expect, $options);
 
         // ' ' as separator
         $options = [
             'foo_bar' => new Option('foo-bar', argument: Option::VALUE_REQUIRED)
         ];
         $input = ['--foo-bar', 'baz'];
-        $arguments = $this->parseOptions($options, $input);
-        $this->assertSameValues($expect, $options);
+        $arguments = $this->parse($options, $input);
+        $this->assertOptionValues($expect, $options);
 
         // missing required value
         $options = [
@@ -103,29 +107,29 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
         $input = ['--foo-bar'];
         $this->expectException(Exception\ArgumentRequired::class);
         $this->expectExceptionMessage("--foo-bar requires an argument.");
-        $this->parseOptions($options, $input);
+        $this->parse($options, $input);
     }
 
-    public function testParse_longOptional() : void
+    public function testLongOptional() : void
     {
         $options = [
             'foo_bar' => new Option('foo-bar', argument: Option::VALUE_OPTIONAL)
         ];
         $input = ['--foo-bar'];
-        $arguments = $this->parseOptions($options, $input);
-        $expect = ['foo-bar' => true];
-        $this->assertSameValues($expect, $options);
+        $arguments = $this->parse($options, $input);
+        $expect = ['foo_bar' => true];
+        $this->assertOptionValues($expect, $options);
 
         $options = [
             'foo_bar' => new Option('foo-bar', argument: Option::VALUE_OPTIONAL)
         ];
         $input = ['--foo-bar=baz'];
-        $arguments = $this->parseOptions($options, $input);
-        $expect = ['foo-bar' => 'baz'];
-        $this->assertSameValues($expect, $options);
+        $arguments = $this->parse($options, $input);
+        $expect = ['foo_bar' => 'baz'];
+        $this->assertOptionValues($expect, $options);
     }
 
-    public function testParse_longMultiple() : void
+    public function testLongMultiple() : void
     {
         $options = [
             'foo_bar' => new Option('foo-bar', argument: Option::VALUE_OPTIONAL, multiple: true)
@@ -138,40 +142,40 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
             '--foo-bar=dib',
             '--foo-bar'
         ];
-        $arguments = $this->parseOptions($options, $input);
-        $expect = ['foo-bar' => [true, true, 'baz', 'dib', true]];
-        $this->assertSameValues($expect, $options);
+        $arguments = $this->parse($options, $input);
+        $expect = ['foo_bar' => [true, true, 'baz', 'dib', true]];
+        $this->assertOptionValues($expect, $options);
     }
 
-    public function testParse_shortRejected() : void
+    public function testShortRejected() : void
     {
         $options = [
-            'f' => new Option('f')
+            'foo' => new Option('f')
         ];
         $input = ['-f'];
-        $arguments = $this->parseOptions($options, $input);
-        $expect = ['f' => true];
-        $this->assertSameValues($expect, $options);
+        $arguments = $this->parse($options, $input);
+        $expect = ['foo' => true];
+        $this->assertOptionValues($expect, $options);
 
         $options = [
-            'f' => new Option('f')
+            'foo' => new Option('f')
         ];
         $input = ['-f', 'baz'];
-        $arguments = $this->parseOptions($options, $input);
-        $expect = ['f' => true];
-        $this->assertSameValues($expect, $options);
+        $arguments = $this->parse($options, $input);
+        $expect = ['foo' => true];
+        $this->assertOptionValues($expect, $options);
         $this->assertSame(['baz'], $arguments);
     }
 
-    public function testParse_shortRequired() : void
+    public function testShortRequired() : void
     {
         $options = [
-            'f' => new Option('f', argument: Option::VALUE_REQUIRED)
+            'foo' => new Option('f', argument: Option::VALUE_REQUIRED)
         ];
         $input = ['-f', 'baz'];
-        $arguments = $this->parseOptions($options, $input);
-        $expect = ['f' => 'baz'];
-        $this->assertSameValues($expect, $options);
+        $arguments = $this->parse($options, $input);
+        $expect = ['foo' => 'baz'];
+        $this->assertOptionValues($expect, $options);
 
         $options = [
             'f' => new Option('f', argument: Option::VALUE_REQUIRED)
@@ -179,59 +183,59 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
         $input = ['-f'];
         $this->expectException(Exception\ArgumentRequired::class);
         $this->expectExceptionMessage("-f requires an argument.");
-        $this->parseOptions($options, $input);
+        $this->parse($options, $input);
     }
 
-    public function testParse_shortOptional() : void
+    public function testShortOptional() : void
     {
         $options = [
-            'f' => new Option('f', argument: Option::VALUE_OPTIONAL)
+            'foo' => new Option('f', argument: Option::VALUE_OPTIONAL)
         ];
         $input = ['-f'];
-        $arguments = $this->parseOptions($options, $input);
-        $expect = ['f' => true];
-        $this->assertSameValues($expect, $options);
+        $arguments = $this->parse($options, $input);
+        $expect = ['foo' => true];
+        $this->assertOptionValues($expect, $options);
 
         $options = [
-            'f' => new Option('f', argument: Option::VALUE_OPTIONAL)
+            'foo' => new Option('f', argument: Option::VALUE_OPTIONAL)
         ];
         $input = ['-f', 'baz'];
-        $arguments = $this->parseOptions($options, $input);
-        $expect = ['f' => 'baz'];
-        $this->assertSameValues($expect, $options);
+        $arguments = $this->parse($options, $input);
+        $expect = ['foo' => 'baz'];
+        $this->assertOptionValues($expect, $options);
     }
 
-    public function testParse_shortMultiple() : void
+    public function testShortMultiple() : void
     {
         $options = [
-            'f' => new Option('f', argument: Option::VALUE_OPTIONAL, multiple: true)
+            'foo' => new Option('f', argument: Option::VALUE_OPTIONAL, multiple: true)
         ];
 
         $input = ['-f', '-f', '-f', 'baz', '-f', 'dib', '-f'];
-        $arguments = $this->parseOptions($options, $input);
-        $expect = ['f' => [true, true, 'baz', 'dib', true]];
-        $this->assertSameValues($expect, $options);
+        $arguments = $this->parse($options, $input);
+        $expect = ['foo' => [true, true, 'baz', 'dib', true]];
+        $this->assertOptionValues($expect, $options);
     }
 
-    public function testParse_shortCluster() : void
+    public function testShortCluster() : void
     {
         $options = [
-            'f' => new Option('f'),
-            'b' => new Option('b'),
-            'z' => new Option('z'),
+            'foo' => new Option('f'),
+            'baz' => new Option('b'),
+            'zim' => new Option('z'),
         ];
 
         $input = ['-fbz'];
-        $arguments = $this->parseOptions($options, $input);
+        $arguments = $this->parse($options, $input);
         $expect = [
-            'f' => true,
-            'b' => true,
-            'z' => true,
+            'foo' => true,
+            'baz' => true,
+            'zim' => true,
         ];
-        $this->assertSameValues($expect, $options);
+        $this->assertOptionValues($expect, $options);
     }
 
-    public function testParse_shortClusterRequired() : void
+    public function testShortClusterRequired() : void
     {
         $options = [
             'f' => new Option('f'),
@@ -242,15 +246,15 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
         $input = ['-fbz'];
         $this->expectException(Exception\ArgumentRequired::class);
         $this->expectExceptionMessage("-b requires an argument.");
-        $this->parseOptions($options, $input);
+        $this->parse($options, $input);
     }
 
     public function testParseAndGet() : void
     {
         $options = [
             'foo_bar' => new Option('foo-bar', argument: Option::VALUE_REQUIRED),
-            'b' => new Option('b'),
-            'z' => new Option('z', argument: Option::VALUE_OPTIONAL),
+            'baz' => new Option('b'),
+            'zim' => new Option('z', argument: Option::VALUE_OPTIONAL),
         ];
 
         $input = [
@@ -268,12 +272,12 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
             'ghi',
         ];
 
-        $arguments = $this->parseOptions($options, $input);
+        $arguments = $this->parse($options, $input);
 
         $expectOptv = [
-            'foo-bar' => 'zim',
-            'b' => true,
-            'z' => 'qux',
+            'foo_bar' => 'zim',
+            'baz' => true,
+            'zim' => 'qux',
         ];
 
         $expectArgv = [
@@ -286,7 +290,7 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
             'ghi',
         ];
 
-        $this->assertSameValues($expectOptv, $options);
+        $this->assertOptionValues($expectOptv, $options);
         $this->assertSame($expectArgv, $arguments);
     }
 
@@ -296,12 +300,11 @@ class SignatureTest extends \PHPUnit\Framework\TestCase
             'foo' => new Option('-f,--foo', argument: Option::VALUE_OPTIONAL, multiple: true)
         ];
 
-        $input = ['-f', '-f', '-f', 'baz', '-f', 'dib', '-f'];
-        $arguments = $this->parseOptions($options, $input);
+        $input = ['-f', '--foo', '-f', 'baz', '-f', 'dib', '--foo'];
+        $arguments = $this->parse($options, $input);
         $expect = [
-            'f' => [true, true, 'baz', 'dib', true],
             'foo' => [true, true, 'baz', 'dib', true],
         ];
-        $this->assertSameValues($expect, $options);
+        $this->assertOptionValues($expect, $options);
     }
 }

@@ -15,32 +15,34 @@ class Manual
     }
 
     /**
-     * @param class-string $class
+     * @param class-string $commandClass
      */
     public function __invoke(
         string $commandName,
-        string $class,
-        string $method
+        string $commandClass,
+        string $commandMethod
     ) : string
     {
-        $rc = $this->reflector->getClass($class);
-        $rm = $this->reflector->getMethod($rc, $method);
+        $signature = $this->reflector->getSignature(
+            $commandClass,
+            $commandMethod
+        );
 
-        $name = $this->name($rc);
+        $summary = $this->summary($signature);
 
-        if ($name) {
-            $name = " -- {$name}";
+        if ($summary) {
+            $summary = " -- {$summary}";
         }
 
         $synopsis = $this->format->bold($commandName);
 
-        $options = $this->options($this->reflector->getOptionsClass($rm));
+        $options = $this->options($signature);
 
         if ($options) {
             $synopsis .= " [options]";
         }
 
-        $argumentSynopsis = $this->argumentSynopsis($rm);
+        $argumentSynopsis = $this->argumentSynopsis($signature);
 
         if ($argumentSynopsis) {
             $synopsis .= " [--] {$argumentSynopsis}";
@@ -48,12 +50,12 @@ class Manual
 
         $out = [];
         $out[] = $this->format->bold("NAME");
-        $out[] = "    " . $this->format->bold($commandName) . $name;
+        $out[] = "    " . $this->format->bold($commandName) . $summary;
         $out[] = "";
         $out[] = $this->format->bold("SYNOPSIS");
         $out[] = "    {$synopsis}";
 
-        $arguments = $this->arguments($rm);
+        $arguments = $this->arguments($signature);
 
         if ($arguments !== null) {
             $out[] = "";
@@ -61,7 +63,7 @@ class Manual
         }
 
         $out[] = $options;
-        $body = $this->body($rc);
+        $body = $this->body($signature);
 
         if ($body !== null) {
             $out[] = $this->format->markup($body);
@@ -70,29 +72,27 @@ class Manual
         return implode(PHP_EOL, $out) . PHP_EOL;
     }
 
-    protected function name(ReflectionClass $rc) : ?string
+    protected function summary(Signature $signature) : ?string
     {
-        $help = $this->reflector->getHelpAttribute($rc);
+        $help = $signature->getCommandHelp();
         return ($help === null) ? null : $this->format->markup($help->line);
     }
 
-    protected function body(ReflectionClass $rc) : ?string
+    protected function body(Signature $signature) : ?string
     {
-        $help = $this->reflector->getHelpAttribute($rc);
+        $help = $signature->getCommandHelp();
         return ($help === null) ? null : $help->body;
     }
 
-    protected function argumentSynopsis(ReflectionMethod $rm) : string
+    protected function argumentSynopsis(Signature $signature) : string
     {
-        $rps = $this->reflector->getArgumentParameters($rm);
-
         $arguments = [];
 
-        foreach ($rps as $rp) {
-            $name = $this->format->ul($rp->getName());
-            $name = $rp->isOptional() ? "[{$name}]" : $name;
+        foreach ($signature->getArgumentParameters() as $argumentParameter) {
+            $name = $this->format->ul($argumentParameter->getName());
+            $name = $argumentParameter->isOptional() ? "[{$name}]" : $name;
 
-            if ($rp->isVariadic()) {
+            if ($argumentParameter->isVariadic()) {
                 $name .= ' ...';
             }
 
@@ -102,14 +102,11 @@ class Manual
         return implode(' ', $arguments);
     }
 
-    /**
-     * @param class-string $optionsClass
-     */
-    protected function options(string $optionsClass) : string
+    protected function options(Signature $signature) : string
     {
         $out = [];
 
-        $optionAttributes = $this->reflector->getOptionAttributes($optionsClass);
+        $optionAttributes = $signature->getOptionAttributes();
 
         if (count($optionAttributes) === 0) {
             return '';
@@ -154,31 +151,31 @@ class Manual
         return $str;
     }
 
-    protected function arguments(ReflectionMethod $rm) : ?string
+    protected function arguments(Signature $signature) : ?string
     {
         $out = [];
 
-        $rps = $this->reflector->getArgumentParameters($rm);
+        $argumentParameters = $signature->getArgumentParameters();
 
-        if (count($rps) === 0) {
+        if (count($argumentParameters) === 0) {
             return null;
         }
 
         $out[] = $this->format->bold("ARGUMENTS");
 
-        foreach ($rps as $rp) {
+        foreach ($argumentParameters as $argumentNumber => $argumentParameter) {
 
-            $tmp = $this->format->ul($rp->getName());
+            $tmp = $this->format->ul($argumentParameter->getName());
 
-            if ($rp->isDefaultValueAvailable()) {
+            if ($argumentParameter->isDefaultValueAvailable()) {
                 $tmp = "{$tmp} " . $this->format->dim(
-                    '(default: ' . var_export($rp->getDefaultValue(), true) . ')'
+                    '(default: ' . var_export($argumentParameter->getDefaultValue(), true) . ')'
                 );
             }
 
             $out[] = "    " . $tmp;
 
-            $help = $this->reflector->getHelpAttribute($rp);
+            $help = $signature->getArgumentHelp($argumentNumber);
 
             if ($help !== null) {
                 $out[] = "        " . ($help->line);

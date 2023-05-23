@@ -81,6 +81,7 @@ class Roster
             $subclasses[] = str_replace(DIRECTORY_SEPARATOR, '\\', $subclass);
         }
 
+        sort($subclasses);
         return $subclasses;
     }
 }

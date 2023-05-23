@@ -34,6 +34,7 @@ class RosterTest extends \PHPUnit\Framework\TestCase
         $expect = [
             "foo-bar:baz" => "",
             "foo-bar:dib" => "Dibs an i, with optional alpha, bravo, and charlie behaviors.",
+            "foo-bar:gir" => "Command for Gir.",
             "foo-bar:qux" => "Command for qux operations.",
         ];
 

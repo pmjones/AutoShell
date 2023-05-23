@@ -61,6 +61,9 @@ foo-bar:baz
 foo-bar:dib
     Dibs an i, with optional alpha, bravo, and charlie behaviors.
 
+foo-bar:gir
+    Command for Gir.
+
 foo-bar:qux
     Command for qux operations.
 
@@ -103,5 +106,26 @@ TEXT;
         $this->assertSame(1, $exit);
         $this->assertStdout('');
         $this->assertStderr('Option --no-such-option is not defined.' . PHP_EOL);
+    }
+
+    public function testNoCommands() : void
+    {
+        $this->console = Console::new(
+            namespace: 'AutoShell\\Fake\\Command',
+            directory: '/No-Such-Dir',
+            stdout: fn (string $output) => $this->stdout .= $output,
+            stderr: fn (string $output) => $this->stderr .= $output,
+        );
+
+        $exit = ($this->console)(['run.php', 'help']);
+        $this->assertSame(0, $exit);
+        $expect = <<<TEXT
+No commands found.
+Namespace: AutoShell\Fake\Command\
+Directory: /No-Such-Dir/
+
+TEXT;
+        $this->assertStdout($expect);
+        $this->assertStderr('');
     }
 }
