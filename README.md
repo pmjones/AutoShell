@@ -511,7 +511,7 @@ $console = Console::new(
     namespace: 'Project\Cli\Command',
     directory: dirname(__DIR__) . '/src/Cli/Command',
     stdout: fn (string $output) => $logger->info($output),
-    stderr: fn (string $output) => $logger->critical($output),
+    stderr: fn (string $output) => $logger->error($output),
 );
 ```
 
