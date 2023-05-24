@@ -387,20 +387,22 @@ There are several optional named parameters for each `#[Option]` attribute:
 - `mode`: (string) Must be one of `Option::VALUE_REJECTED`,
   `VALUE_REQUIRED`, or `VALUE_OPTIONAL`. Default is `VALUE_REJECTED`.
 
-    - If `VALUE_REJECTED`, no user-specified value is allowed; the value is
-      always the default value (see below).
-    - If `VALUE_REQUIRED`, a value *must* be specified.
-    - If `VALUE_OPTIONAL`, a value may be specified; if the option is
-      specified without a value, it will use the default value (see below).
+    - If `VALUE_REJECTED`, the option *must not* be specified with a value;
+      when the option is specified, its value is always the default
+      (see below).
+    - If `VALUE_REQUIRED`, the option *must* be specified with a value;
+    - If `VALUE_OPTIONAL`, the option *may* be specified with a value; if the
+      option is specified without a value, its value is the default
+      (see below).
 
-- `default`: (mixed) The value for when the option is specified, but no value
-  is given. Default is `true`.
+- `default`: (mixed) The value when the option is specified without a value.
+  Default is `true`.
 
-- `multiple`: (bool) `true` if the option may be specified multiple times.
-  Default is `false`. When `true`, the values will be passed as an array,
-  even if the option is specified only once. **Special note:** if the `mode`
+- `multiple`: (bool) When `true`, the option may be specified multiple times,
+  and the values will be passed as an array.(**Special note:** if the `mode`
   is `VALUE_REJECTED` and the property type is `int`, the value will be an
-  integer count of how many times the option was specified.
+  integer count of how many times the option was specified.)  Default is
+  `false`.
 
 - `help`: (string) A short line of help text about this option for the manual
   page.
