@@ -529,11 +529,10 @@ like. However, that may become troublesome, especially when you want to
 begin automated testing. You will need to buffer all command output, capture
 it, and then read it to assert output correctness.
 
-As a lightweight alternative, you can pass a `psr/log` implmentation that
-writes to STDOUT and STDERR resource handles, such as [pmjones/stdlog][].
-Then in testing, you can instantiate the implementation with
-`php://memory` resource handles, and `fread()` the command output from
-memory.
+As an alternative, you can pass a `psr/log` implmentation that writes to
+STDOUT and STDERR resource handles, such as [pmjones/stdlog][]. Then in
+testing, you can instantiate the implementation with `php://memory` resource
+handles, and `fread()` the command output from memory.
 
 Finally, you may wish to inject a more powerful standalone CLI input/output
 system. I am told [league/climate][] is nice, but have not used it.
