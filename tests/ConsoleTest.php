@@ -5,9 +5,9 @@ namespace AutoShell;
 
 class ConsoleTest extends \PHPUnit\Framework\TestCase
 {
-    protected string $stdout = '';
+    protected Stdmem $stdout;
 
-    protected string $stderr = '';
+    protected Stdmem $stderr;
 
     protected Console $console;
 
@@ -15,37 +15,28 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
 
     protected function setUp() : void
     {
+        $this->stdout = new Stdmem();
+        $this->stderr = new Stdmem();
+
         $this->console = Console::new(
             namespace: 'AutoShell\\Fake\\Command',
             directory: __DIR__ . '/Fake/Command',
-            stdout: fn (string $output) => $this->stdout .= $output,
-            stderr: fn (string $output) => $this->stderr .= $output,
+            stdout: $this->stdout,
+            stderr: $this->stderr,
             help: "AutoShell fake test command." . PHP_EOL . PHP_EOL,
         );
 
         $this->format = new Format();
     }
 
-    protected function tearDown() : void
-    {
-        $this->stdout = '';
-        $this->stderr = '';
-    }
-
     protected function assertStdout(string $expect) : void
     {
-        $this->assertSame(
-            $expect,
-            $this->format->strip($this->stdout)
-        );
+        $this->assertSame($expect, (string) $this->stdout);
     }
 
     protected function assertStderr(string $expect) : void
     {
-        $this->assertSame(
-            $expect,
-            $this->format->strip($this->stderr)
-        );
+        $this->assertSame($expect, (string) $this->stderr);
     }
 
     public function testHelpRoster() : void
@@ -113,8 +104,8 @@ TEXT;
         $this->console = Console::new(
             namespace: 'AutoShell\\Fake\\Command',
             directory: '/No-Such-Dir',
-            stdout: fn (string $output) => $this->stdout .= $output,
-            stderr: fn (string $output) => $this->stderr .= $output,
+            stdout: $this->stdout,
+            stderr: $this->stderr,
         );
 
         $exit = ($this->console)(['console.php', 'help']);
