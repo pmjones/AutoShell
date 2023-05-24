@@ -52,6 +52,7 @@ script, open a file in your project at `bin/console.php` and add the
 following code:
 
 ```php
+<?php
 use AutoShell\Console;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
@@ -368,6 +369,7 @@ The first parameter for each `#[Option]` is a comma-separated list
 of short and long names for the option, and is required:
 
 ```php
+<?php
 namespace Project\Cli\Command;
 
 class FooOptions
@@ -413,13 +415,14 @@ Inside your command, you can address the option via an _Options_ parameter
 on the main method:
 
 ```php
+<?php
 namespace Project\Cli\Command;
 
 class Foo
 {
     public function __invoke(FooOptions $options) : int
     {
-        if ($options->barval)) {
+        if ($options->barval) {
             // $barval is true
         }
 
@@ -436,6 +439,7 @@ command. To support this, _AutoShell_ allows more than one _Options_
 parameter on the main method:
 
 ```php
+<?php
 namespace Project\Cli\Command;
 
 class Foo
@@ -445,7 +449,7 @@ class Foo
         FooOptions $fooOptions
     ) : int
     {
-        if ($commonOptions->verbose)) {
+        if ($commonOptions->verbose) {
             // increased verbosity
         }
 
@@ -472,6 +476,7 @@ You can add extra, long-form text to the command-level _Help_ as a second
 parameter. A very light markup of `*bold*` and `_underline_` is supported.
 
 ```php
+<?php
 namespace Project\Cli\Command;
 
 #[Help(
@@ -485,7 +490,7 @@ namespace Project\Cli\Command;
 
     Look for examples _elsewhere_.
 
-    HELP;
+    HELP
 )]
 class Foo
 {
