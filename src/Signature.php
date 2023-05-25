@@ -140,17 +140,19 @@ class Signature
 
         $errmsg = "Argument {$pos} (\${$name}) expected {$type} value";
 
-        if (! $argumentParameter->isVariadic()) {
-            $value = array_shift($this->argv);
-            $arguments[] = ($this->filter)($value, $type, $errmsg);
+        if ($argumentParameter->isVariadic()) {
+            while (! empty($this->argv)) {
+                $value = array_shift($this->argv);
+                $arguments[] = ($this->filter)($value, $type, $errmsg);
+            }
             return;
         }
 
-        // variadic; capture all remaining argv
-        while (! empty($this->argv)) {
-            $value = array_shift($this->argv);
-            $arguments[] = ($this->filter)($value, $type, $errmsg);
-        }
+        $value = empty($this->argv)
+            ? $argumentParameter->getDefaultValue()
+            : array_shift($this->argv);
+
+        $arguments[] = ($this->filter)($value, $type, $errmsg);
     }
 
     /**

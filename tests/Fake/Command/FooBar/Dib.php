@@ -31,6 +31,7 @@ class Dib
         string $k = 'kay'
     ) : int
     {
+        echo "i is {$i}, k is {$k}" . PHP_EOL;
         return 0;
     }
 }

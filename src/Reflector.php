@@ -50,7 +50,7 @@ class Reflector
             foreach ($property->getAttributes() as $attribute) {
                 if ($attribute->getName() === Option::class) {
                     $args = $attribute->getArguments();
-                    $args['type'] = (string) $property->getType();
+                    $args['type'] = trim((string) $property->getType(), '?');
                     $args['valname'] = $property->getName();
                     $optionCollection[$property->getName()] = new Option(...$args);
                 }

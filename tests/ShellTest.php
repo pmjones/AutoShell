@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace AutoShell;
 
 use AutoShell\Fake\Command\FooBar\BazOptions;
+use AutoShell\Fake\Command\FooBar\Dib;
+use AutoShell\Fake\Command\FooBar\DibOptions;
 
 class ShellTest extends \PHPUnit\Framework\TestCase
 {
@@ -79,5 +81,22 @@ class ShellTest extends \PHPUnit\Framework\TestCase
             ],
             $exec->arguments
         );
+    }
+
+    public function testOptions() : void
+    {
+        $argv = ['foo-bar:dib', '88', '-a', '-b', 'bval', '--charlie'];
+        $exec = ($this->shell)($argv);
+
+        $this->assertSame(Dib::class, $exec->class);
+        $this->assertSame('__invoke', $exec->method);
+        $this->assertInstanceOf(DibOptions::class, $exec->arguments[0]);
+        $this->assertSame(true, $exec->arguments[0]->alpha);
+        $this->assertSame('bval', $exec->arguments[0]->bravo);
+        $this->assertSame('delta', $exec->arguments[0]->charlie);
+        $this->assertSame(88, $exec->arguments[1]);
+        $this->assertSame('kay', $exec->arguments[2]);
+        $this->assertNull($exec->error);
+        $this->assertNull($exec->exception);
     }
 }
