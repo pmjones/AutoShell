@@ -183,6 +183,8 @@ parameters:
 <?php
 namespace Project\Cli\Command;
 
+use AutoShell\Help;
+
 #[Help("Says hello to a _name_ of your choice.")]
 class Hello
 {
@@ -478,6 +480,8 @@ parameter. A very light markup of `*bold*` and `_underline_` is supported.
 ```php
 <?php
 namespace Project\Cli\Command;
+
+use AutoShell\Help;
 
 #[Help(
     'This command does something.',
