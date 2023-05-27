@@ -6,6 +6,7 @@ namespace AutoShell;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionParameter;
+use ReflectionProperty;
 
 class Reflector
 {
@@ -29,7 +30,14 @@ class Reflector
     {
         $name = $rp->getName();
         $type = $rp->getType();
-        return (string) $type->getName(); // @phpstan-ignore-line
+        return trim((string) $type->getName(), '?'); // @phpstan-ignore-line
+    }
+
+    public function getPropertyType(ReflectionProperty $rp) : string
+    {
+        $name = $rp->getName();
+        $type = $rp->getType();
+        return trim((string) $type->getName(), '?'); // @phpstan-ignore-line
     }
 
     protected function isOptionsClass(string $class) : bool
@@ -50,7 +58,7 @@ class Reflector
             foreach ($property->getAttributes() as $attribute) {
                 if ($attribute->getName() === Option::class) {
                     $args = $attribute->getArguments();
-                    $args['type'] = trim((string) $property->getType(), '?');
+                    $args['type'] = $this->getPropertyType($property);
                     $args['valname'] = $property->getName();
                     $optionCollection[$property->getName()] = new Option(...$args);
                 }
