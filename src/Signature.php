@@ -19,11 +19,6 @@ class Signature
     protected array $argumentParameters = [];
 
     /**
-     * @var array<string, Option>
-     */
-    protected array $optionsByName = [];
-
-    /**
      * @var array<int, Option>
      */
     protected array $optionCollection = [];
@@ -47,6 +42,8 @@ class Signature
         foreach ($this->methodParameters as $methodParameter) {
             if ($this->reflector->isOptionsParameter($methodParameter)) {
                 $this->addOptionCollection($methodParameter);
+            } else {
+                $this->argumentParameters[] = $methodParameter;
             }
         }
 
@@ -54,12 +51,6 @@ class Signature
             $this->optionCollection,
             fn (Option $a, Option $b) => $a->names <=> $b->names
         );
-
-        foreach ($this->methodParameters as $methodParameter) {
-            if (! $this->reflector->isOptionsParameter($methodParameter)) {
-                $this->argumentParameters[] = $methodParameter;
-            }
-        }
     }
 
     protected function addOptionCollection(
