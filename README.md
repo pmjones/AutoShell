@@ -5,9 +5,9 @@ _AutoShell_ automatically maps CLI command names to PHP command classes in a
  to determine the argument and option values. The method parameters may be
  scalar values(int, float, string, bool) or arrays.
 
-_AutoShell_ is low-maintenance. Merely adding a class to your source code, in the
-recognized namespace and with the recognized main method name, automatically
-makes it available as a command.
+_AutoShell_ has no dependencies and is low-maintenance. Merely adding a class
+to your source code, in the recognized namespace and with the recognized
+main method name, automatically makes it available as a command.
 
 Think of _AutoShell_ as the "router" for your CLI command classes:
 
@@ -374,7 +374,10 @@ of short and long names for the option, and is required:
 <?php
 namespace Project\Cli\Command;
 
-class FooOptions
+use AutoShell\Option;
+use AutoShell\Options;
+
+class FooOptions implements Options
 {
     public function __construct(
 
