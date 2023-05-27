@@ -1,6 +1,6 @@
 # Change Log
 
-## (UNRELEASED) 1.0.1
+## 1.0.1
 
 - Update docs.
 - Minor improvement to type identification in Reflector.
