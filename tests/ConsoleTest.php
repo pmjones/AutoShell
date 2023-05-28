@@ -77,6 +77,8 @@ NAME
 SYNOPSIS
     foo-bar:qux
 
+CLASS METHOD
+    AutoShell\Fake\Command\FooBar\Qux::__invoke()
 
 TEXT;
         $this->assertStdout($expect);

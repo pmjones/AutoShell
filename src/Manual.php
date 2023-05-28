@@ -69,6 +69,9 @@ class Manual
             $out[] = $this->format->markup($body);
         }
 
+        $out[] = $this->format->bold("CLASS METHOD");
+        $out[] = "    {$commandClass}::{$commandMethod}()";
+
         return implode(PHP_EOL, $out) . PHP_EOL;
     }
 

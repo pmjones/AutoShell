@@ -62,6 +62,8 @@ EXAMPLES
 
     Please use your imagination.
 
+CLASS METHOD
+    AutoShell\Fake\Command\FooBar\Dib::__invoke()
 
 TEXT;
         $this->assertSame($expect, $actual);
@@ -84,6 +86,8 @@ NAME
 SYNOPSIS
     foo-bar:qux
 
+CLASS METHOD
+    AutoShell\Fake\Command\FooBar\Qux::__invoke()
 
 TEXT;
 
@@ -119,6 +123,8 @@ OPTIONS
     --zim
         No help available.
 
+CLASS METHOD
+    AutoShell\Fake\Command\FooBar\Baz::__invoke()
 
 TEXT;
 
@@ -163,6 +169,8 @@ OPTIONS
     --zim
         No help available.
 
+CLASS METHOD
+    AutoShell\Fake\Command\FooBar\Gir::__invoke()
 
 TEXT;
 
