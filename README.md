@@ -1,5 +1,8 @@
 # AutoShell
 
+[![PDS Skeleton](https://img.shields.io/badge/pds-skeleton-blue.svg?style=flat-square)](https://github.com/php-pds/skeleton)
+[![PDS Skeleton](https://img.shields.io/badge/pds-composer--script--names-blue?style=flat-square)](https://github.com/php-pds/composer-script-names)
+
 _AutoShell_ automatically maps CLI command names to PHP command classes in a
  specified namespace, reflecting on a specified main method within that class
  to determine the argument and option values. The method parameters may be
