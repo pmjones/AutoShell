@@ -109,7 +109,12 @@ class OptionParser
             return;
         }
 
+        /**
+         * `$chars` will always have more than one element,
+         * hence `array_pop` will never return `null`
+         */
         $chars = str_split($name);
+        /** @var string $final */
         $final = array_pop($chars);
 
         foreach ($chars as $char) {
