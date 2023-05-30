@@ -104,7 +104,7 @@ class Hello
 }
 ```
 
-That's all -- the command should now be available via the console script. If you issue the follwing ...
+That's all -- the command should now be available via the console script. If you issue the following ...
 
     php bin/console.php hello world
 
@@ -544,13 +544,44 @@ like. However, that may become troublesome, especially when you want to
 begin automated testing. You will need to buffer all command output, capture
 it, and then read it to assert output correctness.
 
-As an alternative, you can pass a `psr/log` implmentation that writes to
+As an alternative, you can pass a `psr/log` implementation that writes to
 STDOUT and STDERR resource handles, such as [pmjones/stdlog][]. Then in
 testing, you can instantiate the implementation with `php://memory` resource
 handles, and `fread()` the command output from memory.
 
 Finally, you may wish to inject a more powerful standalone CLI input/output
 system. I am told [league/climate][] is nice, but have not used it.
+
+
+### Local development / Running tests
+
+If you wish to develop _AutoShell_ itself, you can use the supplied
+`docker-compose.yml` file, to set up the relevant environments (PHP 8.1 and 8.2)
+and run the tests or enhance the code with your contributions. You will need
+to have `docker` and `docker-compose` installed on your machine.
+
+You can set up the environments with:
+
+```shell
+docker compose up -d
+```
+
+Once the containers are built, you can enter one of the containers with:
+
+```shell
+docker exec -it autoshell-8.1 /bin/bash
+```
+
+Update composer
+
+```shell
+composer update
+```
+and you can run the tests
+
+```shell
+composer test
+```
 
   [psr/log]: https://packagist.org/packages/psr/log
   [pmjones/stdlog]: https://github.com/pmjones/stdlog
