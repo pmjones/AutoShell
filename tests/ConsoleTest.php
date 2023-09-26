@@ -31,11 +31,13 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
 
     protected function assertStdout(string $expect) : void
     {
+        $expect = str_replace("\n", PHP_EOL, $expect);
         $this->assertSame($expect, (string) $this->stdout);
     }
 
     protected function assertStderr(string $expect) : void
     {
+        $expect = str_replace("\n", PHP_EOL, $expect);
         $this->assertSame($expect, (string) $this->stderr);
     }
 
