@@ -13,6 +13,11 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
 
     protected Format $format;
 
+    protected function osdir(string $dir) : string
+    {
+        return str_replace('/', DIRECTORY_SEPARATOR, $dir);
+    }
+
     protected function setUp() : void
     {
         $this->stdout = new Stdmem();
@@ -20,7 +25,7 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
 
         $this->console = Console::new(
             namespace: 'AutoShell\\Fake\\Command',
-            directory: __DIR__ . '/Fake/Command',
+            directory: $this->osdir(__DIR__ . '/Fake/Command'),
             stdout: $this->stdout,
             stderr: $this->stderr,
             help: "AutoShell fake test command." . PHP_EOL . PHP_EOL,
@@ -31,14 +36,16 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
 
     protected function assertStdout(string $expect) : void
     {
-        $expect = str_replace("\n", PHP_EOL, $expect);
-        $this->assertSame($expect, (string) $this->stdout);
+        $expect = str_replace("\r\n", "\n", (string) $expect);
+        $actual = str_replace("\r\n", "\n", (string) $this->stdout);
+        $this->assertSame($expect, $actual);
     }
 
     protected function assertStderr(string $expect) : void
     {
-        $expect = str_replace("\n", PHP_EOL, $expect);
-        $this->assertSame($expect, (string) $this->stderr);
+        $expect = str_replace("\r\n", "\n", (string) $expect);
+        $actual = str_replace("\r\n", "\n", (string) $this->stderr);
+        $this->assertSame($expect, $actual);
     }
 
     public function testHelpRoster() : void
@@ -90,7 +97,7 @@ TEXT;
     public function testSuccess() : void
     {
         $exit = ($this->console)(['console.php', 'foo-bar:qux']);
-        // $this->assertSame(0, $exit);
+        $this->assertSame(0, $exit);
         $this->assertStdout('');
         $this->assertStderr('');
     }
@@ -105,9 +112,10 @@ TEXT;
 
     public function testNoCommands() : void
     {
+        $directory = $this->osdir('/No-Such-Dir/');
         $this->console = Console::new(
             namespace: 'AutoShell\\Fake\\Command',
-            directory: '/No-Such-Dir',
+            directory: $directory,
             stdout: $this->stdout,
             stderr: $this->stderr,
         );
@@ -115,11 +123,11 @@ TEXT;
         $exit = ($this->console)(['console.php', 'help']);
         $this->assertSame(0, $exit);
         $expect = <<<TEXT
-No commands found.
-Namespace: AutoShell\Fake\Command\
-Directory: /No-Such-Dir/
+        No commands found.
+        Namespace: AutoShell\Fake\Command\
+        Directory: {$directory}
 
-TEXT;
+        TEXT;
         $this->assertStdout($expect);
         $this->assertStderr('');
     }

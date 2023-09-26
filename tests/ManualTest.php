@@ -15,15 +15,19 @@ class ManualTest extends \PHPUnit\Framework\TestCase
         $this->manual = new Manual(new Reflector(), $this->format);
     }
 
+    protected function assertOutput(string $expect, string $actual) : void
+    {
+        $actual = str_replace("\r\n", "\n", $this->format->strip($actual));
+        $this->assertSame($expect, $actual);
+    }
+
     public function testBasic() : void
     {
-        $actual = $this->format->strip(
-            ($this->manual)(
+        $actual = $this->manual->__invoke(
                 'foo-bar:dib',
                 Fake\Command\FooBar\Dib::class,
                 '__invoke'
-            )
-        );
+            );
 
         $expect = <<<TEXT
 NAME
@@ -66,18 +70,16 @@ CLASS METHOD
     AutoShell\Fake\Command\FooBar\Dib::__invoke()
 
 TEXT;
-        $this->assertSame($expect, $actual);
+        $this->assertOutput($expect, $actual);
     }
 
     public function testNoOptionsNoArguments() : void
     {
-        $actual = $this->format->strip(
-            ($this->manual)(
+        $actual = $this->manual->__invoke(
                 'foo-bar:qux',
                 Fake\Command\FooBar\Qux::class,
                 '__invoke'
-            )
-        );
+            );
 
         $expect = <<<TEXT
 NAME
@@ -91,17 +93,15 @@ CLASS METHOD
 
 TEXT;
 
-        $this->assertSame($expect, $actual);
+        $this->assertOutput($expect, $actual);
     }
 
     public function testVariadicArguments() : void
     {
-        $actual = $this->format->strip(
-            ($this->manual)(
-                'foo-bar:baz',
-                Fake\Command\FooBar\Baz::class,
-                '__invoke'
-            )
+        $actual = $this->manual->__invoke(
+            'foo-bar:baz',
+            Fake\Command\FooBar\Baz::class,
+            '__invoke'
         );
 
         $expect = <<<TEXT
@@ -128,18 +128,16 @@ CLASS METHOD
 
 TEXT;
 
-        $this->assertSame($expect, $actual);
+        $this->assertOutput($expect, $actual);
     }
 
     public function testMultiOptions() : void
     {
-        $actual = $this->format->strip(
-            ($this->manual)(
+        $actual = $this->manual->__invoke(
                 'foo-bar:gir',
                 Fake\Command\FooBar\Gir::class,
                 '__invoke'
-            )
-        );
+            );
 
         $expect = <<<TEXT
 NAME
@@ -174,6 +172,6 @@ CLASS METHOD
 
 TEXT;
 
-        $this->assertSame($expect, $actual);
+        $this->assertOutput($expect, $actual);
     }
 }
