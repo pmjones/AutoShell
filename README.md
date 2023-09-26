@@ -1,5 +1,8 @@
 # AutoShell
 
+[![PDS Skeleton](https://img.shields.io/badge/pds-skeleton-blue.svg?style=flat-square)](https://github.com/php-pds/skeleton)
+[![PDS Skeleton](https://img.shields.io/badge/pds-composer--script--names-blue?style=flat-square)](https://github.com/php-pds/composer-script-names)
+
 _AutoShell_ automatically maps CLI command names to PHP command classes in a
  specified namespace, reflecting on a specified main method within that class
  to determine the argument and option values. The method parameters may be
@@ -101,7 +104,7 @@ class Hello
 }
 ```
 
-That's all -- the command should now be available via the console script. If you issue the follwing ...
+That's all -- the command should now be available via the console script. If you issue the following ...
 
     php bin/console.php hello world
 
@@ -541,13 +544,14 @@ like. However, that may become troublesome, especially when you want to
 begin automated testing. You will need to buffer all command output, capture
 it, and then read it to assert output correctness.
 
-As an alternative, you can pass a `psr/log` implmentation that writes to
+As an alternative, you can pass a `psr/log` implementation that writes to
 STDOUT and STDERR resource handles, such as [pmjones/stdlog][]. Then in
 testing, you can instantiate the implementation with `php://memory` resource
 handles, and `fread()` the command output from memory.
 
 Finally, you may wish to inject a more powerful standalone CLI input/output
 system. I am told [league/climate][] is nice, but have not used it.
+
 
   [psr/log]: https://packagist.org/packages/psr/log
   [pmjones/stdlog]: https://github.com/pmjones/stdlog
