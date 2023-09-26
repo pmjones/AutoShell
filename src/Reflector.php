@@ -12,12 +12,16 @@ class Reflector
 {
     /**
      * @param class-string $class
+     * @return ReflectionClass<object>
      */
     public function getClass(string $class) : ReflectionClass
     {
         return new ReflectionClass($class);
     }
 
+    /**
+     * @param ReflectionClass<object> $rc
+     */
     public function getMethod(ReflectionClass $rc, string $method) : ReflectionMethod
     {
         return $rc->getMethod($method);
@@ -69,6 +73,9 @@ class Reflector
         return $optionCollection;
     }
 
+    /**
+     * @param ReflectionClass<object>|ReflectionMethod|ReflectionParameter $spec
+     */
     public function getHelp(
         ReflectionClass|ReflectionMethod|ReflectionParameter $spec,
     ) : ?Help
