@@ -10,7 +10,7 @@ class Help
 {
     public function __construct(
         public readonly string $line,
-        public readonly ?string $body = null
+        public readonly ?string $body = null,
     ) {
     }
 }

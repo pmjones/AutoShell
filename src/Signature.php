@@ -49,13 +49,11 @@ class Signature
 
         usort(
             $this->optionCollection,
-            fn (Option $a, Option $b) => $a->names <=> $b->names
+            fn (Option $a, Option $b) => $a->names <=> $b->names,
         );
     }
 
-    protected function addOptionCollection(
-        ReflectionParameter $optionsParameter
-    ) : void
+    protected function addOptionCollection(ReflectionParameter $optionsParameter) : void
     {
         /** @var class-string */
         $optionsClass = $this->reflector->getParameterType($optionsParameter);
@@ -63,7 +61,7 @@ class Signature
         $this->optionCollectionByClass[$optionsClass] = $optionCollection;
         $this->optionCollection = array_merge(
             $this->optionCollection,
-            array_values($optionCollection)
+            array_values($optionCollection),
         );
     }
 
@@ -76,11 +74,9 @@ class Signature
         $optionParser = new OptionParser(
             $this->optionCollection,
             $this->reflector,
-            $this->filter
+            $this->filter,
         );
-
         $this->argv = $optionParser($argv);
-
         $arguments = [];
 
         foreach ($this->methodParameters as $methodParameter) {
@@ -97,7 +93,7 @@ class Signature
      */
     protected function appendOptions(
         ReflectionParameter $optionsParameter,
-        array &$arguments
+        array &$arguments,
     ) : void
     {
         $optionsClass = $this->reflector->getParameterType($optionsParameter);
@@ -118,7 +114,7 @@ class Signature
      */
     protected function appendArgument(
         ReflectionParameter $argumentParameter,
-        array &$arguments
+        array &$arguments,
     ) : void
     {
         $pos = count($arguments);
@@ -126,7 +122,9 @@ class Signature
         $type = $this->reflector->getParameterType($argumentParameter);
 
         if (empty($this->argv) && ! $argumentParameter->isOptional()) {
-            throw new Exception\ArgumentRequired("Argument {$pos} (\${$name}) is missing.");
+            throw new Exception\ArgumentRequired(
+                "Argument {$pos} (\${$name}) is missing.",
+            );
         }
 
         $errmsg = "Argument {$pos} (\${$name}) expected {$type} value";
@@ -136,13 +134,13 @@ class Signature
                 $value = array_shift($this->argv);
                 $arguments[] = ($this->filter)($value, $type, $errmsg);
             }
+
             return;
         }
 
         $value = empty($this->argv)
             ? $argumentParameter->getDefaultValue()
             : array_shift($this->argv);
-
         $arguments[] = ($this->filter)($value, $type, $errmsg);
     }
 
@@ -164,15 +162,12 @@ class Signature
 
     public function getCommandHelp() : ?Help
     {
-        return $this->reflector->getHelp(
-            $this->reflector->getClass($this->commandClass)
-        );
+        return $this->reflector
+            ->getHelp($this->reflector->getClass($this->commandClass));
     }
 
     public function getArgumentHelp(int $argumentNumber) : ?Help
     {
-        return $this->reflector->getHelp(
-            $this->argumentParameters[$argumentNumber]
-        );
+        return $this->reflector->getHelp($this->argumentParameters[$argumentNumber]);
     }
 }

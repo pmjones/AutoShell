@@ -64,15 +64,10 @@ class Roster
         }
 
         $files = new RegexIterator(
-            new RecursiveIteratorIterator(
-                 new RecursiveDirectoryIterator(
-                    $directory
-                )
-            ),
-            '/^.*\.php$/', // add $suffix
-            RecursiveRegexIterator::GET_MATCH
+            new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory)),
+            '/^.*\.php$/',
+            RecursiveRegexIterator::GET_MATCH,
         );
-
         $len = strlen($directory);
 
         /** @var array<int, string> $file */

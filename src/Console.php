@@ -31,7 +31,6 @@ class Console
             suffix: $suffix,
             help: $help,
         );
-
         return new Console(
             $shell,
             $factory ??= fn (string $class) => new $class(),
@@ -69,7 +68,7 @@ class Console
             $command = $this->newCommand((string) $exec->class);
             $method = $exec->method;
             $arguments = $exec->arguments;
-            return $command->$method(...$arguments);
+            return $command->{$method}(...$arguments);
         }
 
         /** @var Throwable $exception */
@@ -91,7 +90,7 @@ class Console
                 config: $this->shell->config,
                 reflector: $this->shell->reflector,
                 format: new Format(),
-                stdout: $this->stdout
+                stdout: $this->stdout,
             );
         }
 

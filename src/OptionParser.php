@@ -29,8 +29,11 @@ class OptionParser
         foreach ($this->optionCollection as $option) {
             foreach ($option->names as $name) {
                 if (isset($this->optionsByName[$name])) {
-                    throw new Exception\OptionAlreadyDefined("Option '{$name}' is already defined.");
+                    throw new Exception\OptionAlreadyDefined(
+                        "Option '{$name}' is already defined.",
+                    );
                 }
+
                 $this->optionsByName[$name] = $option;
             }
         }
@@ -52,7 +55,6 @@ class OptionParser
 
         // loop through the argv values to be parsed
         while ($this->argv) {
-
             // shift each element from the top of $this->argv
             $curr = array_shift($this->argv);
 
@@ -129,8 +131,6 @@ class OptionParser
 
         $name = strlen($name) === 1 ? "-{$name}" : "--{$name}";
 
-        throw new Exception\OptionNotDefined(
-            "Option {$name} is not defined."
-        );
+        throw new Exception\OptionNotDefined("Option {$name} is not defined.");
     }
 }

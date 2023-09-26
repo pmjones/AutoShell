@@ -14,7 +14,7 @@ class Filter
         }
 
         $method = 'to' . ucfirst($type);
-        return $this->$method($value, $errmsg);
+        return $this->{$method}($value, $errmsg);
     }
 
     /**
@@ -26,7 +26,8 @@ class Filter
             return $value;
         }
 
-        return str_getcsv($value); // @phpstan-ignore-line
+        /** @phpstan-ignore-next-line */
+        return str_getcsv($value);
     }
 
     protected function toBool(mixed $value, string $errmsg) : bool
@@ -35,8 +36,11 @@ class Filter
             return $value;
         }
 
-        /** @var string */
-        $lower = strtolower($value); // @phpstan-ignore-line
+        /**
+         * @var string
+         * @phpstan-ignore-next-line
+         */
+        $lower = strtolower($value);
 
         if (in_array($lower, ['1', 't', 'true', 'y', 'yes'])) {
             return true;
@@ -82,7 +86,8 @@ class Filter
 
     protected function toString(mixed $value, string $errmsg) : string
     {
-        return (string) $value; // @phpstan-ignore-line
+        /** @phpstan-ignore-next-line */
+        return (string) $value;
     }
 
     protected function argumentInvalid(

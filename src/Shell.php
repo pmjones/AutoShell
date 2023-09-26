@@ -51,17 +51,14 @@ class Shell
             return null;
         }
 
-        array_shift($argv); // remove 'help', if present
+        // remove 'help', if present
+        array_shift($argv);
 
         if (empty($argv)) {
-            return new Exec(
-                class: Help\RosterCommand::class,
-                method: '__invoke',
-            );
+            return new Exec(class: Help\RosterCommand::class, method: '__invoke');
         }
 
         $commandName = (string) array_shift($argv);
-
         return new Exec(
             class: Help\ManualCommand::class,
             method: '__invoke',
@@ -69,14 +66,14 @@ class Shell
                 $commandName,
                 $this->getClass($commandName),
                 $this->config->method,
-            ]
+            ],
         );
     }
 
     /**
      * @param array<int, string> $argv
      */
-    protected function newExec(array $argv): Exec
+    protected function newExec(array $argv) : Exec
     {
         $class = null;
         $arguments = [];
@@ -107,17 +104,12 @@ class Shell
     public function getClass(string $commandName) : string
     {
         $namespace = rtrim($this->config->namespace, '\\');
-
-        $class = "{$namespace}\\" . str_replace(
-            ':',
-            '\\',
-            str_replace(
-                '-',
-                '',
-                ucfirst(ucwords($commandName, '-:'))
-            )
-        );
-
+        $class = "{$namespace}\\"
+            . str_replace(
+                ':',
+                '\\',
+                str_replace('-', '', ucfirst(ucwords($commandName, '-:'))),
+            );
         $class .= $this->config->suffix;
 
         if (! $this->reflector->isCommandClass($class)) {

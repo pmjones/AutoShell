@@ -20,14 +20,10 @@ class Manual
     public function __invoke(
         string $commandName,
         string $commandClass,
-        string $commandMethod
+        string $commandMethod,
     ) : string
     {
-        $signature = $this->reflector->getSignature(
-            $commandClass,
-            $commandMethod
-        );
-
+        $signature = $this->reflector->getSignature($commandClass, $commandMethod);
         $summary = $this->summary($signature);
 
         if ($summary) {
@@ -35,7 +31,6 @@ class Manual
         }
 
         $synopsis = $this->format->bold($commandName);
-
         $options = $this->options($signature);
 
         if ($options) {
@@ -54,7 +49,6 @@ class Manual
         $out[] = "";
         $out[] = $this->format->bold("SYNOPSIS");
         $out[] = "    {$synopsis}";
-
         $arguments = $this->arguments($signature);
 
         if ($arguments !== null) {
@@ -71,20 +65,19 @@ class Manual
 
         $out[] = $this->format->bold("CLASS METHOD");
         $out[] = "    {$commandClass}::{$commandMethod}()";
-
         return implode(PHP_EOL, $out) . PHP_EOL;
     }
 
     protected function summary(Signature $signature) : ?string
     {
         $help = $signature->getCommandHelp();
-        return ($help === null) ? null : $this->format->markup($help->line);
+        return $help === null ? null : $this->format->markup($help->line);
     }
 
     protected function body(Signature $signature) : ?string
     {
         $help = $signature->getCommandHelp();
-        return ($help === null) ? null : $help->body;
+        return $help === null ? null : $help->body;
     }
 
     protected function argumentSynopsis(Signature $signature) : string
@@ -108,7 +101,6 @@ class Manual
     protected function options(Signature $signature) : string
     {
         $out = [];
-
         $optionCollection = $signature->getOptionCollection();
 
         if (count($optionCollection) === 0) {
@@ -118,11 +110,12 @@ class Manual
         $out[] = $this->format->bold("OPTIONS");
 
         foreach ($optionCollection as $option) {
-
             $default = '';
 
             if ($option->default !== null) {
-                $default = ' ' . $this->format->dim('(default: ' . var_export($option->default, true) . ')');
+                $default = ' '
+                    . $this->format
+                        ->dim('(default: ' . var_export($option->default, true) . ')');
             }
 
             foreach ($option->names as $name) {
@@ -146,6 +139,7 @@ class Manual
             case Option::VALUE_REQUIRED:
                 $str .= ($short ? ' ' : '=') . $valname;
                 break;
+
             case Option::VALUE_OPTIONAL:
                 $str .= ($short ? ' [' : '[=') . "{$valname}]";
                 break;
@@ -157,7 +151,6 @@ class Manual
     protected function arguments(Signature $signature) : ?string
     {
         $out = [];
-
         $argumentParameters = $signature->getArgumentParameters();
 
         if (count($argumentParameters) === 0) {
@@ -167,21 +160,26 @@ class Manual
         $out[] = $this->format->bold("ARGUMENTS");
 
         foreach ($argumentParameters as $argumentNumber => $argumentParameter) {
-
             $tmp = $this->format->ul($argumentParameter->getName());
 
             if ($argumentParameter->isDefaultValueAvailable()) {
-                $tmp = "{$tmp} " . $this->format->dim(
-                    '(default: ' . var_export($argumentParameter->getDefaultValue(), true) . ')'
-                );
+                $tmp = "{$tmp} "
+                    . $this->format
+                        ->dim(
+                            '(default: '
+                                . var_export(
+                                    $argumentParameter->getDefaultValue(),
+                                    true,
+                                )
+                                . ')',
+                        );
             }
 
             $out[] = "    " . $tmp;
-
             $help = $signature->getArgumentHelp($argumentNumber);
 
             if ($help !== null) {
-                $out[] = "        " . ($help->line);
+                $out[] = "        " . $help->line;
             } else {
                 $out[] = "         No help available.";
             }

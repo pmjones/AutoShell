@@ -69,9 +69,7 @@ class Option
             return;
         }
 
-        throw new Exception\ArgumentRequired(
-            "{$this->names()} requires a value."
-        );
+        throw new Exception\ArgumentRequired("{$this->names()} requires a value.");
     }
 
     public function names() : string
@@ -110,7 +108,7 @@ class Option
         }
 
         throw new Exception\ArgumentRejected(
-            "{$this->names()} does not accept a value."
+            "{$this->names()} does not accept a value.",
         );
     }
 
@@ -121,9 +119,7 @@ class Option
             return;
         }
 
-        throw new Exception\ArgumentRequired(
-            "{$this->names()} requires a value."
-        );
+        throw new Exception\ArgumentRequired("{$this->names()} requires a value.");
     }
 
     protected function equalsOptional(string $value, Filter $filter) : void
@@ -136,7 +132,7 @@ class Option
     protected function setValue(mixed $value, Filter $filter) : void
     {
         if ($this->mode === static::VALUE_REJECTED && $this->type === 'int') {
-            $this->value = ($this->value === null) ? 1 : $this->value + 1;
+            $this->value = $this->value === null ? 1 : $this->value + 1;
             return;
         }
 
@@ -152,6 +148,7 @@ class Option
             $this->value = [];
         }
 
-        $this->value[] = $value; // @phpstan-ignore-line
+        /** @phpstan-ignore-next-line */
+        $this->value[] = $value;
     }
 }

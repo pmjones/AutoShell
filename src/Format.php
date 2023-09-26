@@ -33,19 +33,30 @@ class Format
 
     public function strip(string $str) : string
     {
-        return strtr($str, [
-            static::RESET => '',
-            static::BOLD => '',
-            static::DIM => '',
-            static::UL => '',
-        ]);
+        return strtr(
+            $str,
+            [
+                static::RESET => '',
+                static::BOLD => '',
+                static::DIM => '',
+                static::UL => '',
+            ],
+        );
     }
 
     public function markup(string $str) : string
     {
         $markup = [
-            '/(^|\W)((?<!(\\\\))\*)(.*?)(\*)(\W|$)/ms' => '$1' . static::BOLD . '$4' . static::RESET . '$6',
-            '/(^|\W)(\_)(.*?)(\_)(\W|$)/ms' => '$1' . static::UL   . '$3' . static::RESET . '$5',
+            '/(^|\W)((?<!(\\\\))\*)(.*?)(\*)(\W|$)/ms' => '$1'
+                . static::BOLD
+                . '$4'
+                . static::RESET
+                . '$6',
+            '/(^|\W)(\_)(.*?)(\_)(\W|$)/ms' => '$1'
+                . static::UL
+                . '$3'
+                . static::RESET
+                . '$5',
         ];
 
         foreach ($markup as $find => $replace) {

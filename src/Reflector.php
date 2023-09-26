@@ -18,10 +18,7 @@ class Reflector
         return new ReflectionClass($class);
     }
 
-    public function getMethod(
-        ReflectionClass $rc,
-        string $method
-    ) : ReflectionMethod
+    public function getMethod(ReflectionClass $rc, string $method) : ReflectionMethod
     {
         return $rc->getMethod($method);
     }
@@ -30,14 +27,18 @@ class Reflector
     {
         $name = $rp->getName();
         $type = $rp->getType();
-        return trim((string) $type->getName(), '?'); // @phpstan-ignore-line
+
+        /** @phpstan-ignore-next-line */
+        return trim((string) $type->getName(), '?');
     }
 
     public function getPropertyType(ReflectionProperty $rp) : string
     {
         $name = $rp->getName();
         $type = $rp->getType();
-        return trim((string) $type->getName(), '?'); // @phpstan-ignore-line
+
+        /** @phpstan-ignore-next-line */
+        return trim((string) $type->getName(), '?');
     }
 
     protected function isOptionsClass(string $class) : bool
@@ -69,7 +70,7 @@ class Reflector
     }
 
     public function getHelp(
-        ReflectionClass|ReflectionMethod|ReflectionParameter $spec
+        ReflectionClass|ReflectionMethod|ReflectionParameter $spec,
     ) : ?Help
     {
         foreach ($spec->getAttributes() as $attribute) {
@@ -108,7 +109,6 @@ class Reflector
     {
         $rc = $this->getClass($class);
         $rm = $this->getMethod($rc, $method);
-
         return new Signature(
             $class,
             $method,

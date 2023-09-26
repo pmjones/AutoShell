@@ -8,7 +8,7 @@
         }
     },
     "require": {
-        "php": "^8.1"
+        "php": "^8.1 | ^8.2 | ^8.3"
     },
     "autoload-dev": {
         "psr-4": {
@@ -18,13 +18,21 @@
     "require-dev": {
         "pds/composer-script-names": "^1.0",
         "pds/skeleton": "^1.0",
-        "phpunit/phpunit": "^9.0",
-        "phpstan/phpstan": "^1.0"
+        "phpstan/phpstan": "^1.0",
+        "phpunit/phpunit": "^10.0",
+        "pmjones/php-styler": "0.x-dev"
     },
     "scripts": {
-        "analyze": "./vendor/bin/phpstan analyze --memory-limit=1G -c phpstan.neon",
-        "check": "composer test && composer analyze",
+        "analyze": "./vendor/bin/phpstan analyze -c phpstan.neon",
+        "check": "composer cs-fix-check && composer test && composer analyze",
+        "cs-fix": "./vendor/bin/php-styler apply",
+        "cs-fix-check": "./vendor/bin/php-styler check",
         "test": "./vendor/bin/phpunit",
         "test-coverage": "./vendor/bin/phpunit --coverage-html=./tmp/coverage"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-1.x": "1.x-dev"
+        }
     }
 }
