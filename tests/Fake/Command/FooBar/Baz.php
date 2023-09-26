@@ -5,11 +5,7 @@ namespace AutoShell\Fake\Command\FooBar;
 
 class Baz
 {
-    public function __invoke(
-        BazOptions $options,
-        int $i,
-        string ...$tail
-    ) : int
+    public function __invoke(BazOptions $options, int $i, string ...$tail) : int
     {
         return 0;
     }

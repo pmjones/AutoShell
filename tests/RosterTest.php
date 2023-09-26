@@ -17,9 +17,7 @@ class RosterTest extends \PHPUnit\Framework\TestCase
             namespace: 'AutoShell\\Fake\\Command',
             directory: __DIR__ . '/Fake/Command',
         );
-
         $this->format = new Format();
-
         $this->roster = new Roster($this->config, new Reflector(), $this->format);
     }
 
@@ -37,7 +35,6 @@ class RosterTest extends \PHPUnit\Framework\TestCase
             "foo-bar:gir" => "Command for Gir.",
             "foo-bar:qux" => "Command for qux operations.",
         ];
-
         $this->assertSame($expect, $actual);
     }
 }

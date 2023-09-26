@@ -9,24 +9,14 @@ use AutoShell\Options;
 class DibOptions implements Options
 {
     public function __construct(
-
-        #[Option(
-            'a,alpha',
-            help: "The alpha option."
-        )]
+        #[Option('a,alpha', help: "The alpha option.")]
         public readonly ?bool $alpha,
 
-        #[Option('b,bravo',
-            mode: Option::VALUE_REQUIRED,
-        )]
+        #[Option('b,bravo', mode: Option::VALUE_REQUIRED)]
         public readonly ?string $bravo,
 
-        #[Option('c,charlie',
-            mode: Option::VALUE_OPTIONAL,
-            default: 'delta',
-        )]
+        #[Option('c,charlie', mode: Option::VALUE_OPTIONAL, default: 'delta')]
         public readonly ?string $charlie,
-
     ) {
     }
 }

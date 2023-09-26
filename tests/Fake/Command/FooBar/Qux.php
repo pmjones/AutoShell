@@ -8,8 +8,7 @@ use AutoShell\Help;
 #[Help("Command for qux operations.")]
 class Qux
 {
-    public function __invoke(
-    ) : int
+    public function __invoke() : int
     {
         return 0;
     }

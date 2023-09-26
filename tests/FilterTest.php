@@ -15,10 +15,8 @@ class FilterTest extends \PHPUnit\Framework\TestCase
     public function testToArray() : void
     {
         $expect = ['1', '2', '3'];
-
         $actual = ($this->filter)('1,2,3', 'array', 'Expected array');
         $this->assertSame($expect, $actual);
-
         $actual = ($this->filter)(['1', '2', '3'], 'array', 'Expected array');
         $this->assertSame($expect, $actual);
     }
@@ -26,13 +24,10 @@ class FilterTest extends \PHPUnit\Framework\TestCase
     public function testToBool_true() : void
     {
         $expect = true;
-
         $actual = ($this->filter)('Yes', 'bool', 'Expected bool');
         $this->assertSame($expect, $actual);
-
         $actual = ($this->filter)(true, 'bool', 'Expected bool');
         $this->assertSame($expect, $actual);
-
         $this->expectException(Exception\ArgumentInvalid::class);
         ($this->filter)('x', 'bool', 'Expected bool');
     }
@@ -40,13 +35,10 @@ class FilterTest extends \PHPUnit\Framework\TestCase
     public function testToBool_false() : void
     {
         $expect = false;
-
         $actual = ($this->filter)('No', 'bool', 'Expected bool');
         $this->assertSame($expect, $actual);
-
         $actual = ($this->filter)(false, 'bool', 'Expected bool');
         $this->assertSame($expect, $actual);
-
         $this->expectException(Exception\ArgumentInvalid::class);
         ($this->filter)('x', 'bool', 'Expected bool');
     }
@@ -54,13 +46,10 @@ class FilterTest extends \PHPUnit\Framework\TestCase
     public function testToInt() : void
     {
         $expect = 1;
-
         $actual = ($this->filter)('1', 'int', 'Expected int');
         $this->assertSame($expect, $actual);
-
         $actual = ($this->filter)(1, 'int', 'Expected int');
         $this->assertSame($expect, $actual);
-
         $this->expectException(Exception\ArgumentInvalid::class);
         ($this->filter)('x', 'int', 'Expected int');
     }
@@ -68,13 +57,10 @@ class FilterTest extends \PHPUnit\Framework\TestCase
     public function testToFloat() : void
     {
         $expect = 1.23;
-
         $actual = ($this->filter)('1.23', 'float', 'Expected float');
         $this->assertSame($expect, $actual);
-
         $actual = ($this->filter)(1.23, 'float', 'Expected float');
         $this->assertSame($expect, $actual);
-
         $this->expectException(Exception\ArgumentInvalid::class);
         ($this->filter)('x', 'float', 'Expected float');
     }
@@ -84,11 +70,9 @@ class FilterTest extends \PHPUnit\Framework\TestCase
         $expect = 'abc';
         $actual = ($this->filter)($expect, 'mixed', 'Expected mixed');
         $this->assertSame($expect, $actual);
-
         $expect = 123;
         $actual = ($this->filter)($expect, 'mixed', 'Expected mixed');
         $this->assertSame($expect, $actual);
-
         $expect = 4.56;
         $actual = ($this->filter)($expect, 'mixed', 'Expected mixed');
         $this->assertSame($expect, $actual);
@@ -99,11 +83,9 @@ class FilterTest extends \PHPUnit\Framework\TestCase
         $expect = 'abc';
         $actual = ($this->filter)($expect, 'string', 'Expected string');
         $this->assertSame('abc', $actual);
-
         $expect = 123;
         $actual = ($this->filter)($expect, 'string', 'Expected string');
         $this->assertSame('123', $actual);
-
         $expect = 4.56;
         $actual = ($this->filter)($expect, 'string', 'Expected string');
         $this->assertSame('4.56', $actual);

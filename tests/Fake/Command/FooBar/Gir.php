@@ -11,7 +11,7 @@ class Gir
     public function __invoke(
         BazOptions $bazOptions,
         DibOptions $dibOptions,
-        string $doom
+        string $doom,
     ) : int
     {
         return 0;

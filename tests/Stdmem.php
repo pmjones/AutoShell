@@ -9,9 +9,8 @@ class Stdmem implements Stringable
 {
     protected string $output = '';
 
-    public function __construct(
-        protected Format $format = new Format()
-    ) {
+    public function __construct(protected Format $format = new Format())
+    {
     }
 
     public function __invoke(string $output) : void

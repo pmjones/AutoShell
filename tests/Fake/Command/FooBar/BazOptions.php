@@ -9,10 +9,8 @@ use AutoShell\Options;
 class BazOptions implements Options
 {
     public function __construct(
-
         #[Option('z,zim')]
-        public readonly ?bool $zim
-
+        public readonly ?bool $zim,
     ) {
     }
 }

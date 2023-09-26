@@ -15,7 +15,7 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $this->shell = Shell::new(
             'AutoShell\\Fake\\Command',
-            __DIR__ . '/Fake/Command'
+            __DIR__ . '/Fake/Command',
         );
     }
 
@@ -23,7 +23,6 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $argv = ['foo-bar:baz', '1', 'a', 'b', 'c'];
         $exec = ($this->shell)($argv);
-
         $this->assertSame(Fake\Command\FooBar\Baz::class, $exec->class);
         $this->assertSame('__invoke', $exec->method);
         $this->assertInstanceOf(BazOptions::class, $exec->arguments[0]);
@@ -58,28 +57,21 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $argv = [];
         $exec = ($this->shell)($argv);
-
         $this->assertSame(Help\RosterCommand::class, $exec->class);
         $this->assertSame('__invoke', $exec->method);
         $this->assertSame([], $exec->arguments);
-
         $argv = ['help'];
         $exec = ($this->shell)($argv);
         $this->assertSame(Help\RosterCommand::class, $exec->class);
         $this->assertSame('__invoke', $exec->method);
         $this->assertSame([], $exec->arguments);
-
         $argv = ['help', 'foo-bar:baz'];
         $exec = ($this->shell)($argv);
         $this->assertSame(Help\ManualCommand::class, $exec->class);
         $this->assertSame('__invoke', $exec->method);
         $this->assertSame(
-            [
-                'foo-bar:baz',
-                Fake\Command\FooBar\Baz::class,
-                '__invoke'
-            ],
-            $exec->arguments
+            ['foo-bar:baz', Fake\Command\FooBar\Baz::class, '__invoke'],
+            $exec->arguments,
         );
     }
 
@@ -87,7 +79,6 @@ class ShellTest extends \PHPUnit\Framework\TestCase
     {
         $argv = ['foo-bar:dib', '88', '-a', '-b', 'bval', '--charlie'];
         $exec = ($this->shell)($argv);
-
         $this->assertSame(Dib::class, $exec->class);
         $this->assertSame('__invoke', $exec->method);
         $this->assertInstanceOf(DibOptions::class, $exec->arguments[0]);

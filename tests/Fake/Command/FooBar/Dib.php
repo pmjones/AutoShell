@@ -5,21 +5,18 @@ namespace AutoShell\Fake\Command\FooBar;
 
 use AutoShell\Help;
 
-#[Help(
-    'Dibs an i, with optional alpha, bravo, and charlie behaviors.',
-    <<<BODY
-    *DESCRIPTION*
-        This is a description of the command.
+#[Help('Dibs an i, with optional alpha, bravo, and charlie behaviors.', <<<BODY
+*DESCRIPTION*
+    This is a description of the command.
 
-        There are quite a few nuances.
+    There are quite a few nuances.
 
-    *EXAMPLES*
-        Here are some examples of how to use the command.
+*EXAMPLES*
+    Here are some examples of how to use the command.
 
-        Please use your imagination.
+    Please use your imagination.
 
-    BODY
-)]
+BODY)]
 class Dib
 {
     public function __invoke(
@@ -27,8 +24,7 @@ class Dib
 
         #[Help('The i to be dibbed')]
         int $i,
-
-        string $k = 'kay'
+        string $k = 'kay',
     ) : int
     {
         echo "i is {$i}, k is {$k}" . PHP_EOL;

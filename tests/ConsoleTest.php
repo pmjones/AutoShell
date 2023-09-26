@@ -22,7 +22,6 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
     {
         $this->stdout = new Stdmem();
         $this->stderr = new Stdmem();
-
         $this->console = Console::new(
             namespace: 'AutoShell\\Fake\\Command',
             directory: $this->osdir(__DIR__ . '/Fake/Command'),
@@ -30,7 +29,6 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
             stderr: $this->stderr,
             help: "AutoShell fake test command." . PHP_EOL . PHP_EOL,
         );
-
         $this->format = new Format();
     }
 
@@ -53,22 +51,22 @@ class ConsoleTest extends \PHPUnit\Framework\TestCase
         $exit = ($this->console)(['console.php', 'help']);
         $this->assertSame(0, $exit);
         $expect = <<<TEXT
-AutoShell fake test command.
+        AutoShell fake test command.
 
-foo-bar:baz
-    No help available.
+        foo-bar:baz
+            No help available.
 
-foo-bar:dib
-    Dibs an i, with optional alpha, bravo, and charlie behaviors.
+        foo-bar:dib
+            Dibs an i, with optional alpha, bravo, and charlie behaviors.
 
-foo-bar:gir
-    Command for Gir.
+        foo-bar:gir
+            Command for Gir.
 
-foo-bar:qux
-    Command for qux operations.
+        foo-bar:qux
+            Command for qux operations.
 
 
-TEXT;
+        TEXT;
         $this->assertStdout($expect);
         $this->assertStderr('');
     }
@@ -78,18 +76,18 @@ TEXT;
         $exit = ($this->console)(['console.php', 'help', 'foo-bar:qux']);
         $this->assertSame(0, $exit);
         $expect = <<<TEXT
-AutoShell fake test command.
+        AutoShell fake test command.
 
-NAME
-    foo-bar:qux -- Command for qux operations.
+        NAME
+            foo-bar:qux -- Command for qux operations.
 
-SYNOPSIS
-    foo-bar:qux
+        SYNOPSIS
+            foo-bar:qux
 
-CLASS METHOD
-    AutoShell\Fake\Command\FooBar\Qux::__invoke()
+        CLASS METHOD
+            AutoShell\Fake\Command\FooBar\Qux::__invoke()
 
-TEXT;
+        TEXT;
         $this->assertStdout($expect);
         $this->assertStderr('');
     }
@@ -119,12 +117,11 @@ TEXT;
             stdout: $this->stdout,
             stderr: $this->stderr,
         );
-
         $exit = ($this->console)(['console.php', 'help']);
         $this->assertSame(0, $exit);
         $expect = <<<TEXT
         No commands found.
-        Namespace: AutoShell\Fake\Command\
+        Namespace: AutoShell\\Fake\\Command\\
         Directory: {$directory}
 
         TEXT;
