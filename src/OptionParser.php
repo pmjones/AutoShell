@@ -116,6 +116,7 @@ class OptionParser
          * hence `array_pop` will never return `null`
          */
         $chars = str_split($name);
+
         /** @var string $final */
         $final = array_pop($chars);
 
