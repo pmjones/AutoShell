@@ -1,6 +1,6 @@
 # Change Log
 
-## NEXT
+## 1.0.2
 
 - Include class method in manual output; this helps track down where the command code is.
 
