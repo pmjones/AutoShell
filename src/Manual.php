@@ -49,14 +49,18 @@ class Manual
         $out[] = "";
         $out[] = $this->format->bold("SYNOPSIS");
         $out[] = "    {$synopsis}";
+        $out[] = "";
         $arguments = $this->arguments($signature);
 
         if ($arguments !== null) {
-            $out[] = "";
             $out[] = $arguments;
+            $out[] = "";
         }
 
-        $out[] = $options;
+        if ($options !== '') {
+            $out[] = $options;
+        }
+
         $body = $this->body($signature);
 
         if ($body !== null) {
@@ -187,6 +191,7 @@ class Manual
             $out[] = "";
         }
 
+        array_pop($out);
         return implode(PHP_EOL, $out);
     }
 }
