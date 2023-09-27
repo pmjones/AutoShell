@@ -24,9 +24,9 @@
     },
     "scripts": {
         "analyze": "./vendor/bin/phpstan analyze -c phpstan.neon",
-        "check": "composer test && composer analyze && composer cs-fix-check",
+        "check": "composer test && composer analyze && composer cs-check",
+        "cs-check": "./vendor/bin/php-styler check",
         "cs-fix": "./vendor/bin/php-styler apply",
-        "cs-fix-check": "./vendor/bin/php-styler check",
         "test": "./vendor/bin/phpunit",
         "test-coverage": "./vendor/bin/phpunit --coverage-html=./tmp/coverage"
     },
