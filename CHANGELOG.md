@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.0.3
+
+Hygiene release to make allowances for PHP 8.4 and PHP 8.5
+
 ## 1.0.2
 
 - Include class method in manual output; this helps track down where the command code is.
