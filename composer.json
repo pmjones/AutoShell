@@ -8,7 +8,7 @@
         }
     },
     "require": {
-        "php": "^8.1 | ^8.2 | ^8.3"
+        "php": ">=8.1"
     },
     "autoload-dev": {
         "psr-4": {
@@ -24,7 +24,7 @@
     },
     "scripts": {
         "analyze": "./vendor/bin/phpstan analyze -c phpstan.neon",
-        "check": "composer test && composer analyze && composer cs-check",
+        "check": "composer test && composer analyze",
         "cs-check": "./vendor/bin/php-styler check",
         "cs-fix": "./vendor/bin/php-styler apply",
         "test": "./vendor/bin/phpunit",

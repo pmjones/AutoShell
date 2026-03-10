@@ -27,7 +27,7 @@ class Filter
         }
 
         /** @phpstan-ignore-next-line */
-        return str_getcsv($value);
+        return str_getcsv($value, escape: "\\");
     }
 
     protected function toBool(mixed $value, string $errmsg) : bool
